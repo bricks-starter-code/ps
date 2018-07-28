@@ -1,4 +1,6 @@
 document.body.innerHTML += "<canvas id='canv'></canvas>";
+document.body.style.setProperty('margin', '0px');
+document.html.style.setProperty('margin', '0px');
 
 ///This gets called once when the page is completetly loaded.
 ///Think main()
@@ -51,7 +53,7 @@ function drawCanvas() {
   var ctx = canvas.getContext("2d");      ///Get the canvas context
 
   ///Clear the rectangles
-  ctx.fillStyle = "yellow";
+  ctx.fillStyle = "gray";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   if(typeof customDraw === "function"){

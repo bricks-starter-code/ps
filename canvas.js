@@ -1,6 +1,6 @@
 document.body.innerHTML += "<canvas id='canv'></canvas>";
 document.body.style.setProperty('margin', '0px');
-document.html.style.setProperty('margin', '0px');
+document.documentElement.style.setProperty('margin', '0px'); //Apparently you can't do document.html...https://stackoverflow.com/questions/9362907/how-can-i-reference-the-html-elements-corresponding-dom-object
 
 ///This gets called once when the page is completetly loaded.
 ///Think main()

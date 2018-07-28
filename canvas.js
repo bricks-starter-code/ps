@@ -2,6 +2,9 @@ document.body.innerHTML += "<canvas id='canv'></canvas>";
 document.body.style.setProperty('margin', '0px');
 document.documentElement.style.setProperty('margin', '0px'); //Apparently you can't do document.html...https://stackoverflow.com/questions/9362907/how-can-i-reference-the-html-elements-corresponding-dom-object
 
+var width = 0;  //Will store the width of the canvas
+var height = 0; //Will store the hegiht of the canvas
+
 ///This gets called once when the page is completetly loaded.
 ///Think main()
 function initialBoot() {
@@ -36,8 +39,12 @@ function update() {
 
   ///Make sure everything is the right size
   canvas = document.getElementById("canv");   ///Get the canvas object
-  canvas.width = 640;
-  canvas.height = 480;
+  
+  width = window.innerWidth;
+  height = window.innerHeight;
+  
+  canvas.width = width;
+  canvas.height = height;
 
    if(typeof customUpdate === "function"){
     customUpdate();

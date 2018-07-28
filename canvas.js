@@ -78,7 +78,7 @@ function drawCanvas() {
   
   ctx.save();
   
-  ctx.translate(width/2 - cameraX, height/2 - cameraY);
+  ctx.translate(width/2 - cameraCenterX, height/2 - cameraCenterY);
   
   
 

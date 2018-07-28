@@ -37,6 +37,9 @@ function update() {
   canvas.width = 640;
   canvas.height = 480;
 
+   if(typeof customUpdate === "function"){
+    customUpdate();
+  }
 
   drawCanvas();       ///Draw the canvas
 }

@@ -126,24 +126,4 @@ document.body.innerHTML += "<canvas id='canv'></canvas>";
 
 
     initialBoot();
-  </script>
-  <script>
-    function customUpdate() {
-
-    }
-
-    function customDraw(ctx) {
-
-      /*ctx.strokeStyle = "#ff0000";
-      ctx.beginPath();
-      ctx.moveTo(0,0,);
-      ctx.lineTo(width, height);
-      ctx.stroke();*/
-
-      ctx.strokeStyle = "#ff0000";
-      ctx.beginPath();
-      ctx.moveTo(0, 0, );
-      ctx.lineTo(10, 10);
-      ctx.stroke();
-
-    }
+ 

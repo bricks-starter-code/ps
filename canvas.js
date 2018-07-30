@@ -5,6 +5,7 @@ document.body.innerHTML += "<canvas id='canv'></canvas>";
     document.getElementById('canv').addEventListener('mousemove', mouseMove);
     document.getElementById('canv').addEventListener('mousedown', mouseDown);
     document.getElementById('canv').addEventListener('mouseup', mouseUp);
+    document.getElementById('canv').addEventListener('mousewheel', mouseWheel);
 
 
     var width = 0;  //Will store the width of the canvas
@@ -17,6 +18,8 @@ document.body.innerHTML += "<canvas id='canv'></canvas>";
 
     var lastMouseX = 0;
     var lastMouseY = 0;
+
+    var cameraZoom = 1;
 
     ///This gets called once when the page is completetly loaded.
     ///Think main()
@@ -54,7 +57,7 @@ document.body.innerHTML += "<canvas id='canv'></canvas>";
       canvas = document.getElementById("canv");   ///Get the canvas object
 
       width = window.innerWidth;
-      height = window.innerHeight;
+      height = 400
 
       canvas.width = width;
       canvas.height = height;
@@ -73,12 +76,13 @@ document.body.innerHTML += "<canvas id='canv'></canvas>";
       var ctx = canvas.getContext("2d");      ///Get the canvas context
 
       ///Clear the rectangles
-      ctx.fillStyle = "gray";
+      ctx.fillStyle = "lightgray";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.save();
 
       ctx.translate(width / 2 - cameraCenterX, height / 2 - cameraCenterY);
+      ctx.scale(cameraZoom, cameraZoom);
 
 
 
@@ -124,6 +128,36 @@ document.body.innerHTML += "<canvas id='canv'></canvas>";
       isMouseDown = false
     }
 
+    function mouseWheel(e){
+
+      //Figure out the current world space coordinate
+      let x = e.clientX - (width/2 - cameraCenterX);
+      let y = e.clientY - (height/2 - cameraCenterY)
+      x /= cameraZoom;
+      y /= cameraZoom;
+      //x -= (width/2 - cameraCenterX);
+      //y -= (height/2 - cameraCenterY);
+
+      if(e.wheelDelta > 0)
+      {
+        cameraZoom *= 1.1;
+      }
+      else if(e.wheelDelta < 0){
+        cameraZoom /= 1.1;
+      }
+
+      //Now figure out what the new world space coordinate has changed to
+
+      let x2 = e.clientX - (width/2 - cameraCenterX);
+      let y2 = e.clientY - (height/2 - cameraCenterY);
+      x2 /= cameraZoom;
+      y2 /= cameraZoom;
+      //x2 -= (width/2 - cameraCenterX);
+      //y2 -= (height/2 - cameraCenterY);
+
+      cameraCenterX -= x2 - x;
+      cameraCenterY -= y2 - y;
+    }
+
 
     initialBoot();
- 

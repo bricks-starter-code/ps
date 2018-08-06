@@ -91,6 +91,10 @@ document.body.innerHTML += "<canvas id='canv'></canvas>";
       }
 
       ctx.restore();
+        
+      if (typeof customUI === "function") {
+        customUI(ctx);
+      }
 
     }
 

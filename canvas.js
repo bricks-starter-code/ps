@@ -57,7 +57,7 @@ document.body.innerHTML += "<canvas id='canv'></canvas>";
       canvas = document.getElementById("canv");   ///Get the canvas object
 
       width = window.innerWidth;
-      height = 400
+      height = window.innerHeight;
 
       canvas.width = width;
       canvas.height = height;

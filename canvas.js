@@ -1,3 +1,19 @@
+/**
+ * Usage:
+ * 
+ * In a script tag, put in your custom cade
+ * After the your custom script, put in <script src="canvas.js"></script>
+ * 
+ * If you have a function called customUpdate(), it will be called on the interval before any of the draw functions
+ * If you have a function called customDraw(), it will be called after update on the same interval. customDraw() is called after centering 0,0 at the center of the screen
+ * If you have a function called customUI(), it will be called after customDraw() in screen space
+ * 
+ * If you set a variable called ignoreEvents to something truthy, events will be ignored
+ * If you set a variable called tickOnce to something truthy, the functions will only be called once.
+ */
+
+
+
 document.body.innerHTML += "<canvas id='canv'></canvas>";
 document.body.style.setProperty('margin', '0px');
 document.documentElement.style.setProperty('margin', '0px'); //Apparently you can't do document.html...https://stackoverflow.com/questions/9362907/how-can-i-reference-the-html-elements-corresponding-dom-object
@@ -30,14 +46,17 @@ function initialBoot() {
   update();
 
   ///Start a timer
-  timerID = setTimeout(tick, 33);    								///Initialize the timer
+  if (typeof tickOnce === 'undefined' || !tickOnce)
+    timeID = setInterval(tick, 33)
+  else
+    timerID = setTimeout(tick, 33);    								///Initialize the timer
 }
 
 ///This gets called evertime the timer ticks
 function tick() {
 
   ///Respond differently based on the game state
-  timerID = setTimeout(tick, 33);    ///Restart the timer
+  //timerID = setTimeout(tick, 33);    ///Restart the timer
 
   var currentTime = new Date();       ///Get the current time
   var now = currentTime.getTime();    ///Get the current time in milliseconds
@@ -99,7 +118,10 @@ function drawCanvas() {
 
 }
 
+
+
 function mouseMove(e) {
+  if (ignoreEvents) return;
   let currentMouseX = e.clientX;
   let currentMouseY = e.clientY;
 
@@ -115,6 +137,7 @@ function mouseMove(e) {
 }
 
 function mouseDown(e) {
+  if (ignoreEvents) return;
   let currentMouseX = e.clientX;
   let currentMouseY = e.clientY;
 
@@ -125,6 +148,7 @@ function mouseDown(e) {
 }
 
 function mouseUp(e) {
+  if (ignoreEvents) return;
   let currentMouseX = e.clientX;
   let currentMouseY = e.clientY;
 
@@ -134,6 +158,7 @@ function mouseUp(e) {
 }
 
 function mouseWheel(e) {
+  if (ignoreEvents) return;
 
   //Figure out the current world space coordinate
   let x = e.clientX - (width / 2 - cameraCenterX);

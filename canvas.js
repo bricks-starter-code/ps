@@ -125,7 +125,7 @@
  
  
  function mouseMove(e) {
-   if (ignoreEvents) return;
+   if (noEvents) return;
    let currentMouseX = e.clientX;
    let currentMouseY = e.clientY;
  
@@ -141,7 +141,7 @@
  }
  
  function mouseDown(e) {
-   if (ignoreEvents) return;
+   if (noEvents()) return;
    let currentMouseX = e.clientX;
    let currentMouseY = e.clientY;
  
@@ -152,7 +152,7 @@
  }
  
  function mouseUp(e) {
-   if (ignoreEvents) return;
+   if (noEvents()) return;
    let currentMouseX = e.clientX;
    let currentMouseY = e.clientY;
  
@@ -162,7 +162,7 @@
  }
  
  function mouseWheel(e) {
-   if (ignoreEvents) return;
+   if (noEvents()) return;
  
    //Figure out the current world space coordinate
    let x = e.clientX - (width / 2 - cameraCenterX);
@@ -190,6 +190,10 @@
  
    cameraCenterX -= x2 - x;
    cameraCenterY -= y2 - y;
+ }
+
+ function noEvent(){
+   return (typeof ignoreEvents === "undefined" || ignoreEvents)
  }
  
  

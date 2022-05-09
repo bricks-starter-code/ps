@@ -1,18 +1,38 @@
 <html>
-  <head>
-    
-  </head>
-  <body>
-      <script>
-        function customUpdate(){
-  
-        }
-  
-        function customDraw(ctx){
-  
-        }
-      </script>
-    <script src="canvas.js"></script>
+
+<head>
+
+</head>
+
+<body>
+  <script>
+    "use strict"
+    let state = 1;
+
+    function firstUpdate(options) {
+      //options.ignoreEvents = true;
+      //options.tickOnce = true;
+
+    }
+
+
+    function customUpdate(options) {
+      //console.log("Custom Update")
       
-  </body>
+    }
+
+    function customDraw(ctx, options) {
+      //console.log("Custom Draw")
+
+    }
+
+    function customUI(ctx, options){
+      //console.log("Custom UI")
+    }
+    
+  </script>
+  <script src="canvas.js"></script>
+
+</body>
+
 </html>

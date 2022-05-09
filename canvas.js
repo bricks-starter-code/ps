@@ -121,11 +121,13 @@
    }
  
  }
+
+
  
  
  
  function mouseMove(e) {
-   if (noEvents) return;
+   if (noEvents()) return;
    let currentMouseX = e.clientX;
    let currentMouseY = e.clientY;
  
@@ -192,7 +194,7 @@
    cameraCenterY -= y2 - y;
  }
 
- function noEvent(){
+ function noEvents(){
    return (typeof ignoreEvents === "undefined" || ignoreEvents)
  }
  

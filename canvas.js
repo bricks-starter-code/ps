@@ -1,7 +1,7 @@
 /**
  * Usage:
  * 
- * In a script tag, put in your custom cade
+ * In a script tag, put in your custom code
  * After the your custom script, put in <script src="canvas.js"></script>
  * 
  * If you have a function called customUpdate(), it will be called on the interval before any of the draw functions

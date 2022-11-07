@@ -104,7 +104,6 @@ function tick() {
   //Update the global model
   update();
 
-
   drawCanvas();
 }
 

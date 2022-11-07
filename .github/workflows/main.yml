@@ -17,7 +17,7 @@ jobs:
       - name: Auto Minify bin
         uses: nizarmah/auto-minify@v2.1
         with:
-          output: 'exmaples'
+          output: 'examples'
           overwrite: true
 
       # Auto commits minified files to the repository

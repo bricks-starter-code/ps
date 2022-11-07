@@ -87,7 +87,8 @@ function initialBoot() {
 
   ///Start a timer
   if (typeof options.tickOnce !== 'undefined' && options.tickOnce)
-    setTimeout(tick, options.millisecondsBetweenFrames)
+    //setTimeout(tick, options.millisecondsBetweenFrames)
+    console.log("Ticking only once.")
   else
     setInterval(tick, options.millisecondsBetweenFrames);    								///Initialize the timer
 }

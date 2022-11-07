@@ -1,0 +1,30 @@
+{
+  "name": "ps",
+  "version": "1.0.0",
+  "description": "Include canvas.js in your .html file, and it will bootstrap a canvas and accompanying update() and draw() functions. It is left to the developer to only add a customUpdate() and customDraw() methods to have realtime (potentially interactive) visualization in a webpage. See index.html for an example of how to include ps.js and how to add the custom methods.",
+  "main": "canvas.js",
+  "bin": {
+    "ps": "bin/canvas.js"
+  },
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "minify": "./node_modules/uglify-js/bin/uglifyjs canvas.js > canvas.min.js",
+    "build": "./node_modules/uglify-js/bin/uglifyjs canvas.js > canvas.min.js && cp canvas.min.js ./bin/canvas.min.js && cp canvas.min.js ./examples/canvas.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bricksSeeds/ps.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bricksSeeds/ps/issues"
+  },
+  "homepage": "https://github.com/bricksSeeds/ps#readme",
+  "dependencies": {
+    "uglify-js": "^3.17.4"
+  }
+}

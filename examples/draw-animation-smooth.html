@@ -1,0 +1,30 @@
+<html>
+<!-- Draw a square with a random color -->
+<body>
+  <script>
+    "use strict"
+    let t = 0;
+
+    function firstUpdate(options) {
+      //Comment out this line if you want to move the virtual camera with the mouse.
+      options.ignoreEvents = true;
+    }
+
+    function customUpdate(options) {
+      t += .1
+    }
+
+    function customDraw(ctx, options) {
+      let r = Math.floor((Math.sin(t) + 1) * 255)
+      let g = Math.floor((Math.cos(t)+1) * 255)
+      let b = 0
+      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`
+      ctx.fillRect(-10, 10, 20, 20)
+    }
+
+  </script>
+  <script src="canvas.js"></script>
+
+</body>
+
+</html>

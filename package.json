@@ -10,8 +10,9 @@
     "example": "examples"
   },
   "scripts": {
-    "minify": "./node_modules/uglify-js/bin/uglifyjs canvas.js > canvas.min.js",
-    "build": "./node_modules/uglify-js/bin/uglifyjs canvas.js > canvas.min.js && cp canvas.min.js ./bin/canvas.min.js && cp canvas.min.js ./examples/canvas.js"
+    "minify": "./node_modules/uglify-js/bin/uglifyjs canvas.js > canvas.min.js && cp canvas.js ./examples/canvas.js",
+    "build": "./node_modules/uglify-js/bin/uglifyjs canvas.js > canvas.min.js && cp canvas.min.js ./bin/canvas.min.js && cp canvas.min.js ./examples/canvas.js",
+    "watch": "nodemon --exec \"npm run minify\" --watch ./canvas.js"
   },
   "repository": {
     "type": "git",

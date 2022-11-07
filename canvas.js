@@ -52,18 +52,27 @@ options.cameraCenterY = 0; //The y position the camera is looking at
 
 options.isMouseDown = false; //True if the mouse is down
 
+//Helper functions for tracking mouse movement
 options.lastMouseX = 0;
 options.lastMouseY = 0;
 
+//Set the default camera zoom
 options.cameraZoom = 1;
 
+//Set the default background color
 options.fillColor = "lightgray"
 
+//Set the frame rate
 options.millisecondsBetweenFrames = 33
-options.secondsBetweenFrams = 1/33
+options.secondsBetweenFrames = 1/options.millisecondsBetweenFrames
 
+///Uncomment to disable mouse panning and zooming
 //options.ignoreEvents = true;
+
+//Uncomment if update should only be run once
 //options.tickOne = true;
+
+
 
 ///This gets called once when the page is completetly loaded.
 ///Think main()
@@ -78,9 +87,9 @@ function initialBoot() {
 
   ///Start a timer
   if (typeof options.tickOnce !== 'undefined' && options.tickOnce)
-    setTimeout(tick, consts.millisecondsBetweenFrames)
+    setTimeout(tick, options.millisecondsBetweenFrames)
   else
-    setInterval(tick, consts.millisecondsBetweenFrames);    								///Initialize the timer
+    setInterval(tick, options.millisecondsBetweenFrames);    								///Initialize the timer
 }
 
 ///This gets called evertime the timer ticks

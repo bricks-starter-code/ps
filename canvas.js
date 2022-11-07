@@ -23,7 +23,8 @@
 document.body.style.setProperty('margin', '0px');
  document.documentElement.style.setProperty('margin', '0px'); //Apparently you can't do document.html...https://stackoverflow.com/questions/9362907/how-can-i-reference-the-html-elements-corresponding-dom-object
  document.documentElement.style.setProperty('overflow', 'hidden'); //Apparently you can't do document.html...https://stackoverflow.com/questions/9362907/how-can-i-reference-the-html-elements-corresponding-dom-object
- 
+
+//Add the event hooks so we can respond to the mouse.
  document.getElementById('canv').addEventListener('mousemove', mouseMove);
  document.getElementById('canv').addEventListener('mousedown', mouseDown);
  document.getElementById('canv').addEventListener('mouseup', mouseUp);

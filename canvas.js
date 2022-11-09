@@ -64,7 +64,7 @@ options.fillColor = "lightgray"
 
 //Set the frame rate
 options.millisecondsBetweenFrames = 33
-options.secondsBetweenFrames = 1/options.millisecondsBetweenFrames
+options.secondsBetweenFrames = 1 / options.millisecondsBetweenFrames
 
 ///Uncomment to disable mouse panning and zooming
 //options.ignoreEvents = true;
@@ -82,15 +82,16 @@ function initialBoot() {
   if (typeof firstUpdate === "function")
     firstUpdate(options);
 
-  ///Update the model
-  update(options);
 
   ///Start a timer
   if (typeof options.tickOnce !== 'undefined' && options.tickOnce)
     //setTimeout(tick, options.millisecondsBetweenFrames)
     console.log("Ticking only once.")
-  else
+  else {
+    ///Update the model
+    //update(options);
     setInterval(tick, options.millisecondsBetweenFrames);    								///Initialize the timer
+  }
 }
 
 ///This gets called evertime the timer ticks

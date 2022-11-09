@@ -56,5 +56,49 @@ If the `tickOnce` option is defined and true, the the internal `tick` command is
 
 `tick` stores the current time and then calls `update` and `drawCanvas` as explained.
 
+## Flow Diagram
 
+```mermaid
+graph TD;
+    i["Initialize"]
+    ib["initialBoot()"]
+    firstQ["firstUpdate()?"]
+    firstUpdate["firstUpdate()"]
+    customUpdateQ["customUpdate()?"]
+    customUpdate["customUpdate()"]
+    update["update()"]
+    draw["draw()"]
+    customDrawQ["customDraw()?"]
+    customDraw["customDraw()"]
+    customUIQ["customUI?"]
+    customUI["customUI()"]
+    tick["tick"]
+    tick2["tick"]
+    tick3["tick"]
+    tickOnceQ[".tickOnce?"]
+    
+    i-->ib
+    ib-->firstQ
+    firstQ-->|true|firstUpdate
+    firstQ-->|false|tickOnceQ
+    firstUpdate-->tickOnceQ
+    tickOnceQ-->|true|done
+    tickOnceQ-->|false|tick
+    
+    tick2-->update
+    update-->customUpdateQ
+    customUpdateQ-->|true|customUpdate
+    customUpdateQ-->|false|draw
+    customUpdate-->draw
+    draw-->customDrawQ
+    customDrawQ-->|true|customDraw
+    customDraw-->customUIQ
+    customDrawQ-->|true|customUIQ
+    customUIQ-->|true|customUI
+    customUI-->tick3
+    customUIQ-->|false|tick3
+    
+
+    
+```
 

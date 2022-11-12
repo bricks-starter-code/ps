@@ -124,7 +124,9 @@ function update() {
   canvas.height = options.height;
 
   if (typeof customUpdate === "function") {
+    ctx.save()
     customUpdate(options);
+    ctx.restore()
   }
 
   drawCanvas();       ///Draw the canvas

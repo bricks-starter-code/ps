@@ -52,7 +52,7 @@ options.cameraCenterY = 0; //The y position the camera is looking at
 
 options.isMouseDown = false; //True if the mouse is down
 
-//Helper functions for tracking mouse movement
+//Helper variables for tracking mouse movement
 options.lastMouseX = 0;
 options.lastMouseY = 0;
 
@@ -72,7 +72,13 @@ options.secondsBetweenFrames = 1 / options.millisecondsBetweenFrames
 //Uncomment if update should only be run once
 //options.tickOne = true;
 
-
+options.toWorldSpace = function(screenX, screenY){
+  let x = screenX - (options.width / 2 - options.cameraCenterX);
+  let y = screenY - (options.height / 2 - options.cameraCenterY)
+  x /= options.cameraZoom;
+  y /= options.cameraZoom;
+  return [x,y]
+}
 
 ///This gets called once when the page is completetly loaded.
 ///Think main()
@@ -140,6 +146,14 @@ function drawCanvas() {
   ctx.fillStyle = options.fillColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  if(options.drawGrid){
+    ctx.strokeStyle = "red";
+    ctx.beginPath()
+    ctx.moveTo(0,0);
+    ctx.lineTo(100, 100)
+    ctx.stroke()
+  }
+
   ctx.save();
 
   ctx.translate(options.width / 2 - options.cameraCenterX, options.height / 2 - options.cameraCenterY);
@@ -166,14 +180,14 @@ function mouseMove(e) {
   let currentMouseY = e.clientY;
 
   if (options.isMouseDown) {
-    let diffX = currentMouseX - lastMouseX;
-    let diffY = currentMouseY - lastMouseY;
+    let diffX = currentMouseX - options.lastMouseX;
+    let diffY = currentMouseY - options.lastMouseY;
 
     options.cameraCenterX -= diffX;
     options.cameraCenterY -= diffY;
   }
-  lastMouseX = e.clientX;
-  lastMouseY = e.clientY;
+  options.lastMouseX = e.clientX;
+  options.lastMouseY = e.clientY;
 }
 
 function mouseDown(e) {
@@ -182,8 +196,8 @@ function mouseDown(e) {
   let currentMouseY = e.clientY;
 
 
-  lastMouseX = e.clientX;
-  lastMouseY = e.clientY;
+  options.lastMouseX = e.clientX;
+  options.lastMouseY = e.clientY;
   options.isMouseDown = true;
 }
 
@@ -192,8 +206,8 @@ function mouseUp(e) {
   let currentMouseX = e.clientX;
   let currentMouseY = e.clientY;
 
-  lastMouseX = e.clientX;
-  lastMouseY = e.clientY;
+  options.lastMouseX = e.clientX;
+  options.lastMouseY = e.clientY;
   options.isMouseDown = false
 }
 

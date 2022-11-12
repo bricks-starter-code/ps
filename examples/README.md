@@ -19,3 +19,9 @@ All the examples call `canvas.js` using a relative call, e.g. `"./canvas.js"`, b
 # Draw Animation GUI
 
 `draw_animation_gui.html` is similar to `draw_animation_smooth.html` except that is draws the value of `t` in screen space using the `customUI` function.
+
+# Transformable Math
+
+`transformable_math.html` draws a hard-coded function to the screen. This takes advantage of the built-in camera controlls, allowing the user to pan and zoom on the function.
+
+

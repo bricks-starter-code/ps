@@ -1,0 +1,39 @@
+<html>
+<!-- Draw a square with a random color -->
+<body>
+  <script>
+    "use strict"
+    let f_x = x=>x;
+
+    function firstUpdate(options){
+      options.drawGrid = true;
+    }
+
+    function customDraw(ctx, options) {
+      ctx.strokeStyle = "black";
+      let startX = -10;
+      let endX = 10;
+      let inc = 1;
+
+      ctx.scale(1,-1);
+
+      ctx.beginPath()
+      ctx.moveTo(startX, f_x(startX));
+      for(let i = startX; i <= endX; i+= inc){
+        ctx.lineTo(i, f_x(i))
+      }
+      ctx.stroke()
+    }
+
+    function customUI(ctx, options) {
+      ctx.font = "20px Arial"
+      ctx.fillStyle = "black"
+      ctx.fillText("f(x) = x", 20, 20)
+    }
+
+  </script>
+  <script src="canvas.js"></script>
+
+</body>
+
+</html>

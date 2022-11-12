@@ -72,12 +72,20 @@ options.secondsBetweenFrames = 1 / options.millisecondsBetweenFrames
 //Uncomment if update should only be run once
 //options.tickOne = true;
 
-options.toWorldSpace = function(screenX, screenY){
+options.toWorldSpace = function (screenX, screenY) {
   let x = screenX - (options.width / 2 - options.cameraCenterX);
   let y = screenY - (options.height / 2 - options.cameraCenterY)
   x /= options.cameraZoom;
   y /= options.cameraZoom;
-  return [x,y]
+  return [x, y]
+}
+
+options.toScreenSpace = function (worldX, worldY) {
+  let x = worldX * options.cameraZoom;
+  let y = worldY * options.cameraZoom;
+  x += (options.width / 2 - options.cameraCenterX);
+  y += (options.height / 2 - options.cameraCenterY);
+  return [x, y];
 }
 
 ///This gets called once when the page is completetly loaded.
@@ -146,18 +154,12 @@ function drawCanvas() {
   ctx.fillStyle = options.fillColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  if(options.drawGrid){
-    ctx.strokeStyle = "red";
-    ctx.beginPath()
-    ctx.moveTo(0,0);
-    ctx.lineTo(100, 100)
-    ctx.stroke()
-  }
+
 
   ctx.save();
 
   ctx.translate(options.width / 2 - options.cameraCenterX, options.height / 2 - options.cameraCenterY);
-  ctx.scale(options.cameraZoom, options.cameraZoom);
+  ctx.scale(options.cameraZoom, -options.cameraZoom);
 
 
 
@@ -166,6 +168,42 @@ function drawCanvas() {
   }
 
   ctx.restore();
+
+  if (options.drawGrid) {
+
+    let cx, cy;
+    [cx, cy] = options.toScreenSpace(0, 0);
+
+    ctx.strokeStyle = "red";
+    ctx.beginPath()
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + 100, cy + 100)
+    ctx.stroke()
+
+
+  }
+
+  let ulx, uly, lrx, lry;
+  [ulx, uly] = options.toWorldSpace(0, 0)
+  [lrx, lry] = options.toWorldSpace(ctx.canvas.width, ctx.canvas.height)
+
+  let deltaX = lrx - ulx;
+  let deltaY = lry - uly;
+
+  let startX = Math.floor(ulx);
+  let stopX = Math.ceil(lrx)
+  let starty = Math.floor(uly);
+  let stopY = Math.ceil(lry)
+
+  for (let x = startX; x <= stopX; x++) {
+    let tx, ty;
+    [tx, ty] = options.toScreenSpace(x, 0);
+    ctx.strokeStyle = "red";
+    ctx.beginPath()
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + 100, cy + 100)
+    ctx.stroke()
+  }
 
   if (typeof customUI === "function") {
     customUI(ctx, options);
@@ -227,6 +265,13 @@ function mouseWheel(e) {
   }
   else if (e.wheelDelta < 0) {
     options.cameraZoom /= 1.1;
+  }
+
+  if(options.cameraZoom > 10){
+    options.cameraZoom = 10;
+  }
+  if(options.cameraZoom < .1){
+    options.cameraZoom = .1
   }
 
   //Now figure out what the new world space coordinate has changed to

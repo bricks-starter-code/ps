@@ -13,18 +13,17 @@
     function customUI(ctx, options) {
       ctx.font = "20px Arial"
       ctx.fillStyle = "white"
-      ctx.fillText("Mouse X in screen space: " + options.lastMouseX, 60, 20)
-      ctx.fillText("Mouse Y in screen space: " + options.lastMouseY, 60, 40)
+      ctx.fillText("Mouse X in screen space: " + options.lastMouseX, 60, 60)
+      ctx.fillText("Mouse Y in screen space: " + options.lastMouseY, 60, 80)
 
       let worldX, worldY;
       [worldX, worldY] = options.toWorldSpace(options.lastMouseX, options.lastMouseY)
-      ctx.fillText("Mouse X in world space:" + worldX, 60, 60)
-      ctx.fillText("Mouse Y in world space:" + worldY, 60, 80)
+      ctx.fillText("Mouse X in world space:" + worldX, 60, 100)
+      ctx.fillText("Mouse Y in world space:" + worldY, 60, 120)
 
-      ctx.fillText("Camera Zoom: " + options.cameraZoom, 60, 100);
-      ctx.fillText("Camera Center X: " + options.cameraX, 60, 120)
-
-
+      ctx.fillText("Camera Zoom: " + options.cameraZoom, 60, 140);
+      ctx.fillText("Camera Center X: " + options.cameraCenterX, 60, 160)
+      ctx.fillText("Camera Center Y: " + options.cameraCenterY, 60, 180)
 
 
     }

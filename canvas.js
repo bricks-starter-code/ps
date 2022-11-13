@@ -184,26 +184,56 @@ function drawCanvas() {
   }
 
   let ulx, uly, lrx, lry;
-  [ulx, uly] = options.toWorldSpace(0, 0)
-  [lrx, lry] = options.toWorldSpace(ctx.canvas.width, ctx.canvas.height)
+  // [ulx, uly] = options.toWorldSpace(0, 0)
+  // [lrx, lry] = options.toWorldSpace(ctx.canvas.width, ctx.canvas.height)
+  ulx = options.toWorldSpace(0,0)[0]
+  uly = options.toWorldSpace(0,0)[1]
+  lrx = options.toWorldSpace(ctx.canvas.width, ctx.canvas.height)[0]
+  lry = options.toWorldSpace(ctx.canvas.width, ctx.canvas.height)[1]
 
   let deltaX = lrx - ulx;
   let deltaY = lry - uly;
 
   let startX = Math.floor(ulx);
   let stopX = Math.ceil(lrx)
-  let starty = Math.floor(uly);
+  let startY = Math.floor(uly);
   let stopY = Math.ceil(lry)
 
-  for (let x = startX; x <= stopX; x++) {
-    let tx, ty;
-    [tx, ty] = options.toScreenSpace(x, 0);
-    ctx.strokeStyle = "red";
+  startX -= 10;
+  startX = parseInt(startX/10)*10
+
+  startY -= 10;
+  startY = parseInt(startY/10)*10
+
+  for (let x = startX; x <= stopX; x+=10) {
+    let tx, ty, t2;
+    [tx, ty] = options.toScreenSpace(x, startY);
+    [tx, t2] = options.toScreenSpace(x, stopY);
+    ctx.strokeStyle = "gray";
     ctx.beginPath()
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + 100, cy + 100)
+    ctx.moveTo(tx, ty);
+    ctx.lineTo(tx, t2)
     ctx.stroke()
+
+    ctx.fillStyle = "white"
+    ctx.fillText(x, tx+20, 20);
   }
+
+  for (let y = startY; y <= stopY; y+=10) {
+    let tx, ty,tx2;
+    [tx, ty] = options.toScreenSpace(startX, y);
+    [tx2, ty] = options.toScreenSpace(stopX, y);
+    ctx.strokeStyle = "gray";
+    ctx.beginPath()
+    ctx.moveTo(tx, ty);
+    ctx.lineTo(tx2, ty)
+    ctx.stroke()
+
+    ctx.fillStyle = "white"
+    ctx.fillText(y, 20, ty+20);
+  }
+
+
 
   if (typeof customUI === "function") {
     customUI(ctx, options);

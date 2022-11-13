@@ -1,19 +1,19 @@
 /**
  * Usage:
- * 
+ *
  * In a script tag, put in your custom code
  * After the your custom script, put in <script src="canvas.js"></script>
- * 
+ *
  * If you have a function called customUpdate(), it will be called on the interval before any of the draw functions
  * If you have a function called customDraw(), it will be called after update on the same interval. customDraw() is called after centering 0,0 at the center of the screen
  * If you have a function called customUI(), it will be called after customDraw() in screen space
- * 
+ *
  * If you set a variable called ignoreEvents to something truthy, events will be ignored
  * If you set a variable called tickOnce to something truthy, the functions will only be called once.
  */
 
 
-// Automatically add the canvas element to the DOM. This saves the user from 
+// Automatically add the canvas element to the DOM. This saves the user from
 // having to add it manually, this keeping the html code to a minimum.
 document.body.innerHTML += "<canvas id='canv' oncontextmenu='return false;'></canvas>";
 
@@ -123,7 +123,7 @@ function tick() {
   drawCanvas();
 }
 
-///This gets called whenever the window size changes and the 
+///This gets called whenever the window size changes and the
 ///canvas neends to adjust.
 ///This also adjusts the content pane
 function update() {
@@ -154,6 +154,59 @@ function drawCanvas() {
   ctx.fillStyle = options.fillColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  //Draw a grid in UI space before anythig else if the user
+  //has requested it
+  if (options.drawGrid) {
+
+    //The coordinates of the upper left (ul) and lower right (lr) coordinates
+    let ulx, uly;
+    [ulx, uly] = options.toWorldSpace(0, 0)
+    let lrx, lry;
+    [lrx, lry] = options.toWorldSpace(ctx.canvas.width, ctx.canvas.height)
+    
+    let startX, startY, stopX, stopY;
+
+    let base = 10;
+    let min = Math.min(lrx - ulx, lry - uly);
+    let step = Math.log10(min)/Math.log10(base);
+    step = Math.floor(step);
+    step = Math.pow(base, step);
+
+    startX = parseInt((ulx-step) / step) * step
+    stopX = lrx
+    startY = parseInt((uly-step) / step) * step
+    stopY = lry;
+
+    for (let x = startX; x <= stopX; x += step) {
+      let tx, ty, t2;
+      [tx, ty] = options.toScreenSpace(x, startY);
+      [tx, t2] = options.toScreenSpace(x, stopY);
+      ctx.strokeStyle = "gray";
+      ctx.beginPath()
+      ctx.moveTo(tx, ty);
+      ctx.lineTo(tx, t2)
+      ctx.stroke()
+
+      ctx.fillStyle = "white"
+      ctx.fillText(x, tx + 20, 20);
+    }
+
+    for (let y = startY; y <= stopY; y += step) {
+      let tx, ty, tx2;
+      [tx, ty] = options.toScreenSpace(startX, y);
+      [tx2, ty] = options.toScreenSpace(stopX, y);
+      ctx.strokeStyle = "gray";
+      ctx.beginPath()
+      ctx.moveTo(tx, ty);
+      ctx.lineTo(tx2, ty)
+      ctx.stroke()
+
+      ctx.fillStyle = "white"
+      ctx.fillText(y, 20, ty + 20);
+    }
+
+
+  }
 
 
   ctx.save();
@@ -169,72 +222,12 @@ function drawCanvas() {
 
   ctx.restore();
 
-  if (options.drawGrid) {
-
-    let cx, cy;
-    [cx, cy] = options.toScreenSpace(0, 0);
-
-    ctx.strokeStyle = "red";
-    ctx.beginPath()
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + 100, cy + 100)
-    ctx.stroke()
-
-
-  }
-
-  let ulx, uly, lrx, lry;
-  // [ulx, uly] = options.toWorldSpace(0, 0)
-  // [lrx, lry] = options.toWorldSpace(ctx.canvas.width, ctx.canvas.height)
-  ulx = options.toWorldSpace(0,0)[0]
-  uly = options.toWorldSpace(0,0)[1]
-  lrx = options.toWorldSpace(ctx.canvas.width, ctx.canvas.height)[0]
-  lry = options.toWorldSpace(ctx.canvas.width, ctx.canvas.height)[1]
-
-  let deltaX = lrx - ulx;
-  let deltaY = lry - uly;
-
-  let startX = Math.floor(ulx);
-  let stopX = Math.ceil(lrx)
-  let startY = Math.floor(uly);
-  let stopY = Math.ceil(lry)
-
-  startX -= 10;
-  startX = parseInt(startX/10)*10
-
-  startY -= 10;
-  startY = parseInt(startY/10)*10
-
-  for (let x = startX; x <= stopX; x+=10) {
-    let tx, ty, t2;
-    [tx, ty] = options.toScreenSpace(x, startY);
-    [tx, t2] = options.toScreenSpace(x, stopY);
-    ctx.strokeStyle = "gray";
-    ctx.beginPath()
-    ctx.moveTo(tx, ty);
-    ctx.lineTo(tx, t2)
-    ctx.stroke()
-
-    ctx.fillStyle = "white"
-    ctx.fillText(x, tx+20, 20);
-  }
-
-  for (let y = startY; y <= stopY; y+=10) {
-    let tx, ty,tx2;
-    [tx, ty] = options.toScreenSpace(startX, y);
-    [tx2, ty] = options.toScreenSpace(stopX, y);
-    ctx.strokeStyle = "gray";
-    ctx.beginPath()
-    ctx.moveTo(tx, ty);
-    ctx.lineTo(tx2, ty)
-    ctx.stroke()
-
-    ctx.fillStyle = "white"
-    ctx.fillText(y, 20, ty+20);
-  }
 
 
 
+
+
+  //Call customUI if the user has created this function
   if (typeof customUI === "function") {
     customUI(ctx, options);
   }
@@ -297,10 +290,10 @@ function mouseWheel(e) {
     options.cameraZoom /= 1.1;
   }
 
-  if(options.cameraZoom > 10){
+  if (options.cameraZoom > 10) {
     options.cameraZoom = 10;
   }
-  if(options.cameraZoom < .1){
+  if (options.cameraZoom < .1) {
     options.cameraZoom = .1
   }
 

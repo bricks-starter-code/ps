@@ -25,6 +25,15 @@
       ctx.fillText("Camera Center X: " + options.cameraCenterX, 60, 160)
       ctx.fillText("Camera Center Y: " + options.cameraCenterY, 60, 180)
 
+      let cx, cy;
+    [cx, cy] = options.toScreenSpace(0, 0);
+
+    ctx.strokeStyle = "red";
+    ctx.beginPath()
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + 100, cy + 100)
+    ctx.stroke()
+
 
     }
 

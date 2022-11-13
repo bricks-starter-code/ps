@@ -1,13 +1,22 @@
 <html>
 <!-- Draw a square with a random color -->
+
 <body>
   <script>
     "use strict"
-    let f_x = x=>x;
+    let f_x = x => x;
 
-    function firstUpdate(options){
+    function firstUpdate(options) {
       options.drawGrid = true;
       options.fillColor = "black"
+    }
+
+    function customDraw(ctx, options) {
+      ctx.strokeStyle = "red";
+      ctx.beginPath()
+      ctx.moveTo(0, 0);
+      ctx.lineTo(100, 100)
+      ctx.stroke()
     }
 
     function customUI(ctx, options) {
@@ -24,17 +33,6 @@
       ctx.fillText("Camera Zoom: " + options.cameraZoom, 60, 140);
       ctx.fillText("Camera Center X: " + options.cameraCenterX, 60, 160)
       ctx.fillText("Camera Center Y: " + options.cameraCenterY, 60, 180)
-
-      let cx, cy;
-    [cx, cy] = options.toScreenSpace(0, 0);
-
-    ctx.strokeStyle = "red";
-    ctx.beginPath()
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + 100, cy + 100)
-    ctx.stroke()
-
-
     }
 
   </script>

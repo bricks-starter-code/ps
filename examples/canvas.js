@@ -163,18 +163,19 @@ function drawCanvas() {
     [ulx, uly] = options.toWorldSpace(0, 0)
     let lrx, lry;
     [lrx, lry] = options.toWorldSpace(ctx.canvas.width, ctx.canvas.height)
-    
+
     let startX, startY, stopX, stopY;
 
+    //Set an arbitrary base
     let base = 10;
     let min = Math.min(lrx - ulx, lry - uly);
-    let step = Math.log10(min)/Math.log10(base);
+    let step = Math.log10(min) / Math.log10(base);
     step = Math.floor(step);
     step = Math.pow(base, step);
 
-    startX = parseInt((ulx-step) / step) * step
+    startX = parseInt((ulx - step) / step) * step
     stopX = lrx
-    startY = parseInt((uly-step) / step) * step
+    startY = parseInt((uly - step) / step) * step
     stopY = lry;
 
     for (let x = startX; x <= stopX; x += step) {
@@ -182,6 +183,8 @@ function drawCanvas() {
       [tx, ty] = options.toScreenSpace(x, startY);
       [tx, t2] = options.toScreenSpace(x, stopY);
       ctx.strokeStyle = "gray";
+      if (x == 0)
+        ctx.strokeStyle = "green"
       ctx.beginPath()
       ctx.moveTo(tx, ty);
       ctx.lineTo(tx, t2)
@@ -196,13 +199,15 @@ function drawCanvas() {
       [tx, ty] = options.toScreenSpace(startX, y);
       [tx2, ty] = options.toScreenSpace(stopX, y);
       ctx.strokeStyle = "gray";
+      if (y == 0)
+        ctx.strokeStyle = "red"
       ctx.beginPath()
       ctx.moveTo(tx, ty);
       ctx.lineTo(tx2, ty)
       ctx.stroke()
 
       ctx.fillStyle = "white"
-      ctx.fillText(y, 20, ty + 20);
+      ctx.fillText((-y), 20, ty + 20);
     }
 
 

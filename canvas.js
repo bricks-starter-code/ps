@@ -42,52 +42,52 @@ document.getElementById('canv').addEventListener('mousewheel', mouseWheel);
 document.title = "PS";
 
 // Create the options object and populate it with the defaults
-let options = {};
+let o = {};
 
-options.width = 0;  //Will store the width of the canvas
-options.height = 0; //Will store the hegiht of the canvas
+o.width = 0;  //Will store the width of the canvas
+o.height = 0; //Will store the hegiht of the canvas
 
-options.cameraCenterX = 0; //The x position the camera is looking at
-options.cameraCenterY = 0; //The y position the camera is looking at
+o.cameraCenterX = 0; //The x position the camera is looking at
+o.cameraCenterY = 0; //The y position the camera is looking at
 
-options.isMouseDown = false; //True if the mouse is down
+o.isMouseDown = false; //True if the mouse is down
 
 //Helper variables for tracking mouse movement
-options.lastMouseX = 0;
-options.lastMouseY = 0;
+o.lastMouseX = 0;
+o.lastMouseY = 0;
 
 //Set the default camera zoom
-options.cameraZoom = 1;
+o.cameraZoom = 1;
 
 //Set the default background color
-options.fillColor = "lightgray"
+o.fillColor = "lightgray"
 
 //Set the frame rate
-options.millisecondsBetweenFrames = 33
-options.secondsBetweenFrames = 1 / options.millisecondsBetweenFrames
+o.millisecondsBetweenFrames = 33
+o.secondsBetweenFrames = 1 / o.millisecondsBetweenFrames
 
 ///Uncomment to disable mouse panning and zooming
-//options.ignoreEvents = true;
+//o.ignoreEvents = true;
 
 //Uncomment if update should only be run once
-//options.tickOne = true;
+//o.tickOne = true;
 
-let ctx;
+let c;
 let canvas
 
-options.toWorldSpace = function (screenX, screenY) {
-  let x = screenX - (options.width / 2 - options.cameraCenterX);
-  let y = screenY - (options.height / 2 - options.cameraCenterY)
-  x /= options.cameraZoom;
-  y /= options.cameraZoom;
+o.toWorldSpace = function (screenX, screenY) {
+  let x = screenX - (o.width / 2 - o.cameraCenterX);
+  let y = screenY - (o.height / 2 - o.cameraCenterY)
+  x /= o.cameraZoom;
+  y /= o.cameraZoom;
   return [x, y]
 }
 
-options.toScreenSpace = function (worldX, worldY) {
-  let x = worldX * options.cameraZoom;
-  let y = worldY * options.cameraZoom;
-  x += (options.width / 2 - options.cameraCenterX);
-  y += (options.height / 2 - options.cameraCenterY);
+o.toScreenSpace = function (worldX, worldY) {
+  let x = worldX * o.cameraZoom;
+  let y = worldY * o.cameraZoom;
+  x += (o.width / 2 - o.cameraCenterX);
+  y += (o.height / 2 - o.cameraCenterY);
   return [x, y];
 }
 
@@ -96,37 +96,37 @@ options.toScreenSpace = function (worldX, worldY) {
 function initialBoot() {
 
   canvas = document.getElementById("canv");   ///Get the canvas object
-  ctx = canvas.getContext("2d");
-  ctx.b = function () {
-    ctx.beginPath();
+  c = canvas.getContext("2d");
+  c.b = function () {
+    c.beginPath();
     return this;
   }
-  ctx.m = function (x, y) {
-    ctx.moveTo(x, y)
+  c.m = function (x, y) {
+    c.moveTo(x, y)
     return this;
   }
-  ctx.l = function (x, y) {
-    ctx.lineTo(x, y);
+  c.l = function (x, y) {
+    c.lineTo(x, y);
     return this;
   }
-  ctx.s = function () {
-    ctx.stroke();
+  c.s = function () {
+    c.stroke();
     return this;
   }
-  ctx.st = function (style) {
-    ctx.strokeStyle = style;
+  c.st = function (style) {
+    c.strokeStyle = style;
     return this;
   }
-  ctx.fi = function (style) {
-    ctx.fillStyle = style;
+  c.fi = function (style) {
+    c.fillStyle = style;
     return this;
   }
-  ctx.fo = function (font) {
-    ctx.font = font
+  c.fo = function (font) {
+    c.font = font
     return this;
   }
-  ctx.text = function (text, x, y) {
-    ctx.fillText(text, x, y);
+  c.text = function (text, x, y) {
+    c.fillText(text, x, y);
     return this;
   }
 
@@ -134,17 +134,17 @@ function initialBoot() {
 
   //Call the firstUpdate function if it exists (only called once)
   if (typeof firstUpdate === "function")
-    firstUpdate(options);
+    firstUpdate(o);
 
 
   ///Start a timer
-  if (typeof options.tickOnce !== 'undefined' && options.tickOnce)
-    //setTimeout(tick, options.millisecondsBetweenFrames)
+  if (typeof o.tickOnce !== 'undefined' && o.tickOnce)
+    //setTimeout(tick, o.millisecondsBetweenFrames)
     console.log("Ticking only once.")
   else {
     ///Update the model
-    //update(options);
-    setInterval(tick, options.millisecondsBetweenFrames);    								///Initialize the timer
+    //update(o);
+    setInterval(tick, o.millisecondsBetweenFrames);    								///Initialize the timer
   }
 }
 
@@ -171,16 +171,16 @@ function update() {
   ///Make sure everything is the right size
 
   //Grab the size of the window
-  options.width = window.innerWidth;
-  options.height = window.innerHeight;
+  o.width = window.innerWidth;
+  o.height = window.innerHeight;
 
   //set the size of the canvas
-  canvas.width = options.width;
-  canvas.height = options.height;
+  canvas.width = o.width;
+  canvas.height = o.height;
 
   //If there is a custom update function, call it.
   if (typeof customUpdate === "function") {
-    customUpdate(options);
+    customUpdate(o);
   }
 
   drawCanvas();       ///Draw the canvas
@@ -189,18 +189,18 @@ function update() {
 ///Called whenever the canvas needs to be redrawn
 function drawCanvas() {
   ///Clear the rectangles
-  ctx.fillStyle = options.fillColor;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  c.fillStyle = o.fillColor;
+  c.fillRect(0, 0, canvas.width, canvas.height);
 
   //Draw a grid in UI space before anythig else if the user
   //has requested it
-  if (options.drawGrid) {
+  if (o.drawGrid) {
 
     //The coordinates of the upper left (ul) and lower right (lr) coordinates
     let ulx, uly;
-    [ulx, uly] = options.toWorldSpace(0, 0)
+    [ulx, uly] = o.toWorldSpace(0, 0)
     let lrx, lry;
-    [lrx, lry] = options.toWorldSpace(ctx.canvas.width, ctx.canvas.height)
+    [lrx, lry] = o.toWorldSpace(c.canvas.width, c.canvas.height)
 
     let startX, startY, stopX, stopY;
 
@@ -218,54 +218,54 @@ function drawCanvas() {
 
     for (let x = startX; x <= stopX; x += step) {
       let tx, ty, t2;
-      [tx, ty] = options.toScreenSpace(x, startY);
-      [tx, t2] = options.toScreenSpace(x, stopY);
-      ctx.strokeStyle = "gray";
+      [tx, ty] = o.toScreenSpace(x, startY);
+      [tx, t2] = o.toScreenSpace(x, stopY);
+      c.strokeStyle = "gray";
       if (x == 0)
-        ctx.strokeStyle = "green"
-      ctx.beginPath()
-      ctx.moveTo(tx, ty);
-      ctx.lineTo(tx, t2)
-      ctx.stroke()
+        c.strokeStyle = "green"
+      c.beginPath()
+      c.moveTo(tx, ty);
+      c.lineTo(tx, t2)
+      c.stroke()
 
-      ctx.fillStyle = "white"
-      ctx.fillText(x, tx + 20, 20);
+      c.fillStyle = "white"
+      c.fillText(x, tx + 20, 20);
     }
 
     for (let y = startY; y <= stopY; y += step) {
       let tx, ty, tx2;
-      [tx, ty] = options.toScreenSpace(startX, y);
-      [tx2, ty] = options.toScreenSpace(stopX, y);
-      ctx.strokeStyle = "gray";
+      [tx, ty] = o.toScreenSpace(startX, y);
+      [tx2, ty] = o.toScreenSpace(stopX, y);
+      c.strokeStyle = "gray";
       if (y == 0)
-        ctx.strokeStyle = "red"
-      ctx.beginPath()
-      ctx.moveTo(tx, ty);
-      ctx.lineTo(tx2, ty)
-      ctx.stroke()
+        c.strokeStyle = "red"
+      c.beginPath()
+      c.moveTo(tx, ty);
+      c.lineTo(tx2, ty)
+      c.stroke()
 
-      ctx.fillStyle = "white"
-      ctx.fillText((-y), 20, ty + 20);
+      c.fillStyle = "white"
+      c.fillText((-y), 20, ty + 20);
     }
   }
 
   //Save transform before we account for the camera
-  ctx.save();
+  c.save();
 
   //Adjust for the camera
-  ctx.translate(options.width / 2 - options.cameraCenterX, options.height / 2 - options.cameraCenterY);
-  ctx.scale(options.cameraZoom, -options.cameraZoom);
+  c.translate(o.width / 2 - o.cameraCenterX, o.height / 2 - o.cameraCenterY);
+  c.scale(o.cameraZoom, -o.cameraZoom);
 
   if (typeof customDraw === "function") {
-    customDraw(ctx, options);
+    customDraw(c, o);
   }
 
   //Restore to pre-camera transform state
-  ctx.restore();
+  c.restore();
 
   //Call customUI if the user has created this function
   if (typeof customUI === "function") {
-    customUI(ctx, options);
+    customUI(c, o);
   }
 }
 
@@ -275,15 +275,15 @@ function mouseMove(e) {
   let currentMouseX = e.clientX;
   let currentMouseY = e.clientY;
 
-  if (options.isMouseDown) {
-    let diffX = currentMouseX - options.lastMouseX;
-    let diffY = currentMouseY - options.lastMouseY;
+  if (o.isMouseDown) {
+    let diffX = currentMouseX - o.lastMouseX;
+    let diffY = currentMouseY - o.lastMouseY;
 
-    options.cameraCenterX -= diffX;
-    options.cameraCenterY -= diffY;
+    o.cameraCenterX -= diffX;
+    o.cameraCenterY -= diffY;
   }
-  options.lastMouseX = e.clientX;
-  options.lastMouseY = e.clientY;
+  o.lastMouseX = e.clientX;
+  o.lastMouseY = e.clientY;
 }
 
 function mouseDown(e) {
@@ -292,9 +292,9 @@ function mouseDown(e) {
   let currentMouseY = e.clientY;
 
 
-  options.lastMouseX = e.clientX;
-  options.lastMouseY = e.clientY;
-  options.isMouseDown = true;
+  o.lastMouseX = e.clientX;
+  o.lastMouseY = e.clientY;
+  o.isMouseDown = true;
 }
 
 function mouseUp(e) {
@@ -302,51 +302,51 @@ function mouseUp(e) {
   let currentMouseX = e.clientX;
   let currentMouseY = e.clientY;
 
-  options.lastMouseX = e.clientX;
-  options.lastMouseY = e.clientY;
-  options.isMouseDown = false
+  o.lastMouseX = e.clientX;
+  o.lastMouseY = e.clientY;
+  o.isMouseDown = false
 }
 
 function mouseWheel(e) {
   if (noEvents()) return;
 
   //Figure out the current world space coordinate
-  let x = e.clientX - (options.width / 2 - options.cameraCenterX);
-  let y = e.clientY - (options.height / 2 - options.cameraCenterY)
-  x /= options.cameraZoom;
-  y /= options.cameraZoom;
-  //x -= (width/2 - options.cameraCenterX);
-  //y -= (height/2 - options.cameraCenterY);
+  let x = e.clientX - (o.width / 2 - o.cameraCenterX);
+  let y = e.clientY - (o.height / 2 - o.cameraCenterY)
+  x /= o.cameraZoom;
+  y /= o.cameraZoom;
+  //x -= (width/2 - o.cameraCenterX);
+  //y -= (height/2 - o.cameraCenterY);
 
   if (e.wheelDelta > 0) {
-    options.cameraZoom *= 1.1;
+    o.cameraZoom *= 1.1;
   }
   else if (e.wheelDelta < 0) {
-    options.cameraZoom /= 1.1;
+    o.cameraZoom /= 1.1;
   }
 
-  if (options.cameraZoom > 10) {
-    options.cameraZoom = 10;
+  if (o.cameraZoom > 100) {
+    o.cameraZoom = 100;
   }
-  if (options.cameraZoom < .1) {
-    options.cameraZoom = .1
+  if (o.cameraZoom < .1) {
+    o.cameraZoom = .1
   }
 
   //Now figure out what the new world space coordinate has changed to
 
-  let x2 = e.clientX - (options.width / 2 - options.cameraCenterX);
-  let y2 = e.clientY - (options.height / 2 - options.cameraCenterY);
-  x2 /= options.cameraZoom;
-  y2 /= options.cameraZoom;
-  //x2 -= (width/2 - options.cameraCenterX);
-  //y2 -= (height/2 - options.cameraCenterY);
+  let x2 = e.clientX - (o.width / 2 - o.cameraCenterX);
+  let y2 = e.clientY - (o.height / 2 - o.cameraCenterY);
+  x2 /= o.cameraZoom;
+  y2 /= o.cameraZoom;
+  //x2 -= (width/2 - o.cameraCenterX);
+  //y2 -= (height/2 - o.cameraCenterY);
 
-  options.cameraCenterX -= x2 - x;
-  options.cameraCenterY -= y2 - y;
+  o.cameraCenterX -= x2 - x;
+  o.cameraCenterY -= y2 - y;
 }
 
 function noEvents() {
-  return (typeof options.ignoreEvents !== "undefined" && options.ignoreEvents)
+  return (typeof o.ignoreEvents !== "undefined" && o.ignoreEvents)
 }
 
 

@@ -1,34 +1,39 @@
 <html>
-<!-- Draw a square with a random color -->
+
 <body>
   <script>
     "use strict"
-    let f_x = x=>x;
+    let f_x = x => x ** 2;
 
-    function firstUpdate(options){
-      options.drawGrid = true;
+    function firstUpdate(o) {
+      o.drawGrid = true;
+      o.cameraZoom = 100;
     }
 
-    function customDraw(ctx, options) {
-      ctx.strokeStyle = "black";
+    function customDraw(c, o) {
       let startX = -10;
       let endX = 10;
-      let inc = 1;
+      let inc = .1;
 
-      ctx.scale(1,-1);
+      c.lineWidth = 1 / o.cameraZoom;
 
-      ctx.beginPath()
-      ctx.moveTo(startX, f_x(startX));
-      for(let i = startX; i <= endX; i+= inc){
-        ctx.lineTo(i, f_x(i))
+      let ulx, uly;
+      [ulx, uly] = o.toWorldSpace(0, 0)
+      let lrx, lry;
+      [lrx, lry] = o.toWorldSpace(c.canvas.width, c.canvas.height)
+      ulx = Math.floor(ulx);
+
+      let start = o.toWorldSpace(-1, 0)[0]
+      c.st("black").b().m(start, f_x(start));
+      for (let i = 0; i <= c.canvas.width; i += 1) {
+        let x= o.toWorldSpace(i, 0)[0];
+        c.l(x, f_x(x))
       }
-      ctx.stroke()
+      c.s()
     }
 
-    function customUI(ctx, options) {
-      ctx.font = "20px Arial"
-      ctx.fillStyle = "black"
-      ctx.fillText("f(x) = x", 20, 20)
+    function customUI(c, o) {
+      c.fo("20px Arial").fi("black").text("f(x) = x", 20, 20)
     }
 
   </script>

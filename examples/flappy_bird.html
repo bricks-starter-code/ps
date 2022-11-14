@@ -13,7 +13,7 @@
       o.maxZoom = 50;
       o.minZoom = 20;
       o.cameraZoom = 50;
-      o.zoom(1).lookAt(0, 5);
+      o.zoom(10).lookAt(0, 5);
       boot();
     }
 
@@ -21,10 +21,10 @@
       [v,y] = [0,5]
     }
     
-    function customUpdate(o){
+    function customUpdate(c, o){
       v -= 9.8*o.time;
       i.down(" ", ()=>v=5)
-      //y += v*o.time;
+      y += v*o.time;
     }
 
     function customDraw(c, o) {

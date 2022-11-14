@@ -98,20 +98,20 @@ o.toScreenSpace = function (worldX, worldY) {
   return [x, y];
 }
 
-o.lookAt = function(x, y){
+o.lookAt = function (x, y) {
   o.cameraCenterX = x * o.cameraZoom;
   o.cameraCenterY = y * -o.cameraZoom;
   return this;
 }
 
-o.zoom = function(z){
+o.zoom = function (z) {
   let h = c.canvas.height;
-  z = h/(2)
+  z = h / z
   // if(z > o.maxZoom)
   //   z = o.maxZoom;
   // if(z < o.minZoom)
   //   z = o.minZoom;
-  
+
   o.cameraZoom = z;
   return this;
 }
@@ -132,7 +132,7 @@ c.s = function () {
   c.stroke();
   return this;
 }
-c.f = function(){
+c.f = function () {
   c.fill();
   return this;
 }
@@ -152,8 +152,8 @@ c.text = function (text, x, y) {
   c.fillText(text, x, y);
   return this;
 }
-c.circle = function(x,y,r){
-  c.arc(x,y,r, 0, Math.PI * 2)
+c.circle = function (x, y, r) {
+  c.arc(x, y, r, 0, Math.PI * 2)
   return this;
 }
 
@@ -162,6 +162,16 @@ c.circle = function(x,y,r){
 function initialBoot() {
 
   i.attach(document)
+
+  ///Make sure everything is the right size
+
+  //Grab the size of the window
+  o.width = window.innerWidth;
+  o.height = window.innerHeight;
+
+  //set the size of the canvas
+  canvas.width = o.width;
+  canvas.height = o.height;
 
   //Call the firstUpdate function if it exists (only called once)
   if (typeof firstUpdate === "function")
@@ -199,15 +209,7 @@ function tick() {
 ///This also adjusts the content pane
 function update() {
 
-  ///Make sure everything is the right size
 
-  //Grab the size of the window
-  o.width = window.innerWidth;
-  o.height = window.innerHeight;
-
-  //set the size of the canvas
-  canvas.width = o.width;
-  canvas.height = o.height;
 
   i.update();
 
@@ -229,7 +231,7 @@ function drawCanvas() {
   //has requested it
   if (o.drawGrid) {
     c.fo("10px Arial").fi("white")
-      
+
 
     //The coordinates of the upper left (ul) and lower right (lr) coordinates
     let ulx, uly;
@@ -243,7 +245,7 @@ function drawCanvas() {
     let base = 10;
     let min = Math.min(lrx - ulx, lry - uly);
     let step = Math.log10(min) / Math.log10(base);
-    step = Math.floor(step)-1;
+    step = Math.floor(step - .5);
     step = Math.pow(base, step);
 
     startX = parseInt((ulx - step) / step) * step
@@ -437,8 +439,8 @@ class i {
   static getKeyDown(key) {
     return this.frameKeysDown[key];
   }
-  static down(key, lambda){
-    if(i.getKeyDown(key))
+  static down(key, lambda) {
+    if (i.getKeyDown(key))
       lambda();
   }
   static getKeyUp(key) {

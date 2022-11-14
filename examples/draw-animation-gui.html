@@ -5,12 +5,12 @@
     "use strict"
     let t = 0;
 
-    function firstUpdate(options) {
+    function firstUpdate(c, options) {
       //Comment out this line if you want to move the virtual camera with the mouse.
       options.ignoreEvents = true;
     }
 
-    function customUpdate(options) {
+    function customUpdate(c, options) {
       t += options.secondsBetweenFrames
     }
 

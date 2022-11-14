@@ -1,0 +1,41 @@
+<html>
+<!-- Draw a square with a random color -->
+
+<body>
+  <script>
+    "use strict"
+    let v = 0;
+    let y = 0;
+
+    function firstUpdate(c,o) {
+      o.drawGrid = true;
+      o.fillColor = "black"
+      o.maxZoom = 50;
+      o.minZoom = 20;
+      o.cameraZoom = 50;
+      o.zoom(1).lookAt(0, 5);
+      boot();
+    }
+
+    function boot(){
+      [v,y] = [0,5]
+    }
+    
+    function customUpdate(o){
+      v -= 9.8*o.time;
+      i.down(" ", ()=>v=5)
+      //y += v*o.time;
+    }
+
+    function customDraw(c, o) {
+      c.fi("green").b().circle(0, y, .2).f()
+    }
+
+    
+
+  </script>
+  <script src="canvas.js"></script>
+
+</body>
+
+</html>

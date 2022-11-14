@@ -72,6 +72,9 @@ options.secondsBetweenFrames = 1 / options.millisecondsBetweenFrames
 //Uncomment if update should only be run once
 //options.tickOne = true;
 
+let ctx;
+let canvas
+
 options.toWorldSpace = function (screenX, screenY) {
   let x = screenX - (options.width / 2 - options.cameraCenterX);
   let y = screenY - (options.height / 2 - options.cameraCenterY)
@@ -91,6 +94,43 @@ options.toScreenSpace = function (worldX, worldY) {
 ///This gets called once when the page is completetly loaded.
 ///Think main()
 function initialBoot() {
+
+  canvas = document.getElementById("canv");   ///Get the canvas object
+  ctx = canvas.getContext("2d");
+  ctx.b = function () {
+    ctx.beginPath();
+    return this;
+  }
+  ctx.m = function (x, y) {
+    ctx.moveTo(x, y)
+    return this;
+  }
+  ctx.l = function (x, y) {
+    ctx.lineTo(x, y);
+    return this;
+  }
+  ctx.s = function () {
+    ctx.stroke();
+    return this;
+  }
+  ctx.st = function (style) {
+    ctx.strokeStyle = style;
+    return this;
+  }
+  ctx.fi = function (style) {
+    ctx.fillStyle = style;
+    return this;
+  }
+  ctx.fo = function (font) {
+    ctx.font = font
+    return this;
+  }
+  ctx.text = function (text, x, y) {
+    ctx.fillText(text, x, y);
+    return this;
+  }
+
+
 
   //Call the firstUpdate function if it exists (only called once)
   if (typeof firstUpdate === "function")
@@ -129,14 +169,16 @@ function tick() {
 function update() {
 
   ///Make sure everything is the right size
-  canvas = document.getElementById("canv");   ///Get the canvas object
 
+  //Grab the size of the window
   options.width = window.innerWidth;
   options.height = window.innerHeight;
 
+  //set the size of the canvas
   canvas.width = options.width;
   canvas.height = options.height;
 
+  //If there is a custom update function, call it.
   if (typeof customUpdate === "function") {
     customUpdate(options);
   }
@@ -146,10 +188,6 @@ function update() {
 
 ///Called whenever the canvas needs to be redrawn
 function drawCanvas() {
-
-  ///Grab the canvas so we can draw on it
-  var ctx = canvas.getContext("2d");      ///Get the canvas context
-
   ///Clear the rectangles
   ctx.fillStyle = options.fillColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -209,34 +247,26 @@ function drawCanvas() {
       ctx.fillStyle = "white"
       ctx.fillText((-y), 20, ty + 20);
     }
-
-
   }
 
-
+  //Save transform before we account for the camera
   ctx.save();
 
+  //Adjust for the camera
   ctx.translate(options.width / 2 - options.cameraCenterX, options.height / 2 - options.cameraCenterY);
   ctx.scale(options.cameraZoom, -options.cameraZoom);
-
-
 
   if (typeof customDraw === "function") {
     customDraw(ctx, options);
   }
 
+  //Restore to pre-camera transform state
   ctx.restore();
-
-
-
-
-
 
   //Call customUI if the user has created this function
   if (typeof customUI === "function") {
     customUI(ctx, options);
   }
-
 }
 
 

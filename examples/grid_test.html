@@ -6,33 +6,28 @@
     "use strict"
     let f_x = x => x;
 
-    function firstUpdate(options) {
-      options.drawGrid = true;
-      options.fillColor = "black"
+    function firstUpdate(o) {
+      o.drawGrid = true;
+      o.fillColor = "black"
     }
 
-    function customDraw(ctx, options) {
-      ctx.strokeStyle = "red";
-      ctx.beginPath()
-      ctx.moveTo(0, 0);
-      ctx.lineTo(100, 100)
-      ctx.stroke()
+    function customDraw(c, o) {
+      c.st("red").b().m(0, 0).l(100, 100).s();
     }
 
-    function customUI(ctx, options) {
-      ctx.font = "20px Arial"
-      ctx.fillStyle = "white"
-      ctx.fillText("Mouse X in screen space: " + options.lastMouseX, 60, 60)
-      ctx.fillText("Mouse Y in screen space: " + options.lastMouseY, 60, 80)
+    function customUI(c, o) {
+      c.fo("20px Arial").fi("white")
+      c.text("Mouse X in screen space: " + o.lastMouseX, 60, 60)
+      c.text("Mouse Y in screen space: " + o.lastMouseY, 60, 80)
 
       let worldX, worldY;
-      [worldX, worldY] = options.toWorldSpace(options.lastMouseX, options.lastMouseY)
-      ctx.fillText("Mouse X in world space:" + worldX, 60, 100)
-      ctx.fillText("Mouse Y in world space:" + worldY, 60, 120)
+      [worldX, worldY] = o.toWorldSpace(o.lastMouseX, o.lastMouseY)
+      c.text("Mouse X in world space:" + worldX, 60, 100)
+      c.text("Mouse Y in world space:" + worldY, 60, 120)
 
-      ctx.fillText("Camera Zoom: " + options.cameraZoom, 60, 140);
-      ctx.fillText("Camera Center X: " + options.cameraCenterX, 60, 160)
-      ctx.fillText("Camera Center Y: " + options.cameraCenterY, 60, 180)
+      c.text("Camera Zoom: " + o.cameraZoom, 60, 140);
+      c.text("Camera Center X: " + o.cameraCenterX, 60, 160)
+      c.text("Camera Center Y: " + o.cameraCenterY, 60, 180)
     }
 
   </script>

@@ -41,7 +41,7 @@ Each of the four possible custom functions receives a reference to the `options`
 |fillColor| The color used to clear this canvas before anything is drawn. | `lightgray`. Changing this value will change the background color on the next frame.|
 |millisecondsBetweenFrames. | The number of milliseconds sent to the timer. Except in the case when computation goes longer than this amount, this is the framerate in milliseconds. | This should be treated as read-only.|
 |secondsBetweenFrames| Same as `millisecondsBetweenFrames`, but expressed as a decimal number of seconds. This value is the easiest one to use in `customUpdate` to track the passage of time. | This should be treated as read-only.
-| ignoreEvents | Disables the mouse event system. If set to `true`, not mouse events will be captured, preventing the user from scrolling and panning with the mouse. | `false`/`undefined`. |
+| disableCameraMovement | Disables the mouse event system. If set to `true`, not mouse events will be captured, preventing the user from scrolling and panning with the mouse. | `false`/`undefined`. |
 |tickOnce | If set to `true`, `customUpdate` will only be called once. The correct place to set this value is in the custom `firstUpdate` function. | `false`/`undefined`|
 
 ## Flow of the engine

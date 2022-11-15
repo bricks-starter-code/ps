@@ -8,7 +8,7 @@
  * If you have a function called customDraw(), it will be called after update on the same interval. customDraw() is called after centering 0,0 at the center of the screen
  * If you have a function called customUI(), it will be called after customDraw() in screen space
  *
- * If you set a variable called ignoreEvents to something truthy, events will be ignored
+ * If you set a variable called disableCameraMovement to something truthy, events will be ignored
  * If you set a variable called tickOnce to something truthy, the functions will only be called once.
  */
 
@@ -59,7 +59,7 @@ o.lastMouseY = 0;
 //Set the default camera zoom
 o.maxZoom = 100;
 o.minZoom = .1
-o.cameraZoom = o.maxZoom;
+o.cameraZoom = 1;
 
 //Set the default background color
 o.fillColor = "lightgray"
@@ -70,7 +70,7 @@ o.secondsBetweenFrames = 1 / o.millisecondsBetweenFrames
 o.time = o.secondsBetweenFrames;
 
 ///Uncomment to disable mouse panning and zooming
-//o.ignoreEvents = true;
+//o.disableCameraMovement = true;
 
 //Uncomment if update should only be run once
 //o.tickOne = true;
@@ -383,7 +383,7 @@ function mouseWheel(e) {
 }
 
 function noEvents() {
-  return (typeof o.ignoreEvents !== "undefined" && o.ignoreEvents)
+  return (typeof o.disableCameraMovement !== "undefined" && o.disableCameraMovement)
 }
 
 class i {

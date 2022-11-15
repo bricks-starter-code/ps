@@ -308,7 +308,7 @@ function drawCanvas() {
 
 
 function mouseMove(e) {
-  if (noEvents()) return;
+  if (isCameraDisabled()) return;
   let currentMouseX = e.clientX;
   let currentMouseY = e.clientY;
 
@@ -324,7 +324,7 @@ function mouseMove(e) {
 }
 
 function mouseDown(e) {
-  if (noEvents()) return;
+  if (isCameraDisabled()) return;
   let currentMouseX = e.clientX;
   let currentMouseY = e.clientY;
 
@@ -335,7 +335,7 @@ function mouseDown(e) {
 }
 
 function mouseUp(e) {
-  if (noEvents()) return;
+  if (isCameraDisabled()) return;
   let currentMouseX = e.clientX;
   let currentMouseY = e.clientY;
 
@@ -345,7 +345,7 @@ function mouseUp(e) {
 }
 
 function mouseWheel(e) {
-  if (noEvents()) return;
+  if (isCameraDisabled()) return;
 
   //Figure out the current world space coordinate
   let x = e.clientX - (o.width / 2 - o.cameraCenterX);
@@ -382,7 +382,7 @@ function mouseWheel(e) {
   o.cameraCenterY -= y2 - y;
 }
 
-function noEvents() {
+function isCameraDisabled() {
   return (typeof o.disableCameraMovement !== "undefined" && o.disableCameraMovement)
 }
 

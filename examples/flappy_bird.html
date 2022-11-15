@@ -6,33 +6,61 @@
     "use strict"
     let v = 0;
     let y = 0;
+    let x = 0;
 
-    function firstUpdate(c,o) {
-      o.drawGrid = true;
-      o.fillColor = "black"
-      o.maxZoom = 50;
-      o.minZoom = 20;
-      o.cameraZoom = 50;
-      o.disableCameraMovement = true;
-      o.zoom(10).lookAt(0, 5);
-      boot();
+    let currentScene = scenes[0]
+
+    function boot() {
+      [v, x, y] = [0, 0, 5]
     }
 
-    function boot(){
-      [v,y] = [0,5]
-    }
+    let scenes = [
+      {
+        firstUpdate: (c, o) => {
+          o.drawGrid = true;
+          o.fillColor = "black"
+          o.maxZoom = 50;
+          o.minZoom = 20;
+          o.cameraZoom = 50;
+          o.disableCameraMovement = true;
+          o.zoom(10).lookAt(0, 5);
+          boot();
+        },
+        customUpdate(c, o) {
+          v -= 9.8 * o.time;
+          i.down(" ", () => v = 5)
+          y += v * o.time;
+          x += o.time;
+          o.lookAt(x, 5);
+
+          if (y < 0) {
+            //You hit the ground
+            boot()
+          }
+        },
+        customDraw(c, o) {
+          c.fi("green").b().circle(x, y, .2).f()
+        }
+      }
+    ]
+
     
-    function customUpdate(c, o){
-      v -= 9.8*o.time;
-      i.down(" ", ()=>v=5)
-      y += v*o.time;
+
+    function firstUpdate(c, o) {
+      currentScene.firstUpdate(c, o);
+    }
+
+    
+
+    function customUpdate(c, o) {
+      currentScene.customUpdate(c, o);
     }
 
     function customDraw(c, o) {
-      c.fi("green").b().circle(0, y, .2).f()
+      currentScene.customDraw(c, o);
     }
 
-    
+
 
   </script>
   <script src="canvas.js"></script>

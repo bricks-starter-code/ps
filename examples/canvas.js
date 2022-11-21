@@ -157,14 +157,7 @@ c.circle = function (x, y, r) {
   return this;
 }
 
-///This gets called once when the page is completetly loaded.
-///Think main()
-function initialBoot() {
-
-  i.attach(document)
-
-  ///Make sure everything is the right size
-
+function resizeCanvas() {
   //Grab the size of the window
   o.width = window.innerWidth;
   o.height = window.innerHeight;
@@ -172,6 +165,17 @@ function initialBoot() {
   //set the size of the canvas
   canvas.width = o.width;
   canvas.height = o.height;
+}
+
+///This gets called once when the page is completetly loaded.
+///Think main()
+function initialBoot() {
+
+  i.attach(document)
+
+  ///Make sure everything is the right size
+  resizeCanvas();
+
 
   //Call the firstUpdate function if it exists (only called once)
   if (typeof firstUpdate === "function")
@@ -210,7 +214,7 @@ function tick() {
 function update() {
 
 
-
+  //Update the input class
   i.update();
 
   //If there is a custom update function, call it.
@@ -223,6 +227,9 @@ function update() {
 
 ///Called whenever the canvas needs to be redrawn
 function drawCanvas() {
+  //Update the canvas size in case there has been a change
+  resizeCanvas()
+  
   ///Clear the rectangles
   c.fillStyle = o.fillColor;
   c.fillRect(0, 0, canvas.width, canvas.height);

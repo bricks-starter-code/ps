@@ -1,9 +1,47 @@
+<!DOCTYPE html>
+<html>
+
 <body>
+
   <head>
-    
+    <style>
+      * {
+        margin: 0px;
+        padding: 0px;
+      }
+
+      iframe {
+        border: 1px solid black;
+        flex: 1 1 auto;
+      }
+
+      .flexbox_container {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .flexbox_child {
+        flex-grow: 1;
+      }
+    </style>
   </head>
+
   <body>
-    <iframe src="./draw_animation_smooth.html" ></iframe>
-    <iframe src="./grid_test.html" ></iframe>
+    <div class="flexbox_container">
+      <div class="flexbox_child">
+        <iframe src="./draw_animation_smooth.html"></iframe>
+      </div>
+      <div class="flexbox_child">
+        <iframe src="./grid_test.html"></iframe>
+      </div>
+      <div class="flexbox_child">
+        <iframe src="./transformable_math.html"></iframe>
+      </div>
+      <div class="flexbox_child">
+        <iframe src="./flappy_bird.html"></iframe>
+      </div>
+    </div>
   </body>
 </body>
+
+</html>

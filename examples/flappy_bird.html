@@ -8,8 +8,7 @@
     let y = 0;
     let x = 0;
 
-    let currentScene = scenes[0]
-
+    
     function boot() {
       [v, x, y] = [0, 0, 5]
     }
@@ -44,13 +43,16 @@
       }
     ]
 
-    
+    let currentScene = scenes[0]
+
+
+
 
     function firstUpdate(c, o) {
       currentScene.firstUpdate(c, o);
     }
 
-    
+
 
     function customUpdate(c, o) {
       currentScene.customUpdate(c, o);

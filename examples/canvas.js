@@ -181,6 +181,10 @@ function initialBoot() {
   if (typeof firstUpdate === "function")
     firstUpdate(c, o);
 
+  if(typeof o?.scene?.firstUpdate === "function"){
+    o.scene.firstUpdate(c,o);
+  }
+
 
   ///Start a timer
   if (typeof o.tickOnce !== 'undefined' && o.tickOnce)
@@ -220,6 +224,9 @@ function update() {
   //If there is a custom update function, call it.
   if (typeof customUpdate === "function") {
     customUpdate(c, o);
+  }
+  if(typeof o?.scene?.customUpdate === "function"){
+    o.scene.customUpdate(c,o)
   }
 
   drawCanvas();       ///Draw the canvas
@@ -303,6 +310,9 @@ function drawCanvas() {
   if (typeof customDraw === "function") {
     customDraw(c, o);
   }
+  if(typeof o?.scene?.customDraw === "function"){
+    o.scene.customDraw(c,o)
+  }
 
   //Restore to pre-camera transform state
   c.restore();
@@ -310,6 +320,9 @@ function drawCanvas() {
   //Call customUI if the user has created this function
   if (typeof customUI === "function") {
     customUI(c, o);
+  }
+  if(typeof o?.scene?.customUI === "function"){
+    o.scene.customUI(c,o)
   }
 }
 

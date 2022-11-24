@@ -167,6 +167,10 @@ function resizeCanvas() {
   canvas.height = o.height;
 }
 
+function cs(){
+  return o.scenes[o.currentScene];
+}
+
 ///This gets called once when the page is completetly loaded.
 ///Think main()
 function initialBoot() {
@@ -178,12 +182,15 @@ function initialBoot() {
 
 
   //Call the firstUpdate function if it exists (only called once)
-  if (typeof firstUpdate === "function")
-    firstUpdate(c, o);
+  if (typeof firstUpdate === "function") firstUpdate(c, o);
 
-  if(typeof o?.scene?.firstUpdate === "function"){
-    o.scene.firstUpdate(c,o);
+  if(o.scenes){
+    o.currentScene = 0;
   }
+  if(typeof cs().firstUpdate === "function") cs().firstUpdate(c,o)
+
+  
+  
 
 
   ///Start a timer
@@ -225,9 +232,8 @@ function update() {
   if (typeof customUpdate === "function") {
     customUpdate(c, o);
   }
-  if(typeof o?.scene?.customUpdate === "function"){
-    o.scene.customUpdate(c,o)
-  }
+  if(typeof cs().customUpdate === "function") cs().customUpdate(c,o)
+
 
   drawCanvas();       ///Draw the canvas
 }
@@ -236,7 +242,7 @@ function update() {
 function drawCanvas() {
   //Update the canvas size in case there has been a change
   resizeCanvas()
-  
+
   ///Clear the rectangles
   c.fillStyle = o.fillColor;
   c.fillRect(0, 0, canvas.width, canvas.height);
@@ -310,20 +316,15 @@ function drawCanvas() {
   if (typeof customDraw === "function") {
     customDraw(c, o);
   }
-  if(typeof o?.scene?.customDraw === "function"){
-    o.scene.customDraw(c,o)
-  }
+  if(typeof cs().customDraw === "function") cs().customDraw(c,o)
+
 
   //Restore to pre-camera transform state
   c.restore();
 
   //Call customUI if the user has created this function
-  if (typeof customUI === "function") {
-    customUI(c, o);
-  }
-  if(typeof o?.scene?.customUI === "function"){
-    o.scene.customUI(c,o)
-  }
+  if(typeof cs().customUI === "function") cs().customUI(c,o)
+
 }
 
 

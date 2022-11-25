@@ -19,11 +19,15 @@
         customUpdate:(c,o)=>{
           timer += 1;
           console.log("first scene")
-          if(timer >= 10)
+          if(timer >= 100)
           {
             console.log("Changing scene")
-            o.currentScene = 1;
+            o.changeScene(1)
           }
+        },
+        customUI:(c,o)=>{
+          let t = "Welcome to this Game"
+          c.fi("Green").fo("40px Arial").tc(t, c.canvas.width/2, c.canvas.height/2)
         }
       },
       {

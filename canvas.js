@@ -152,6 +152,12 @@ c.text = function (text, x, y) {
   c.fillText(text, x, y);
   return this;
 }
+c.tc = function(t, x,y){//Draw text centered
+  let mt = c.measureText(t)
+  console.log(mt)
+  this.text(t, x - mt.width/2, y - mt.fontBoundingBoxAscent/2)
+  return this
+}
 c.circle = function (x, y, r) {
   c.arc(x, y, r, 0, Math.PI * 2)
   return this;
@@ -186,12 +192,13 @@ function initialBoot() {
 
   if(o.scenes){
     o.currentScene = 0;
+    o.sceneChange = false;
+    o.changeScene = function(index){
+      o.currentScene = index;
+      o.sceneChange = true;
+    }
   }
   if(typeof cs().firstUpdate === "function") cs().firstUpdate(c,o)
-
-  
-  
-
 
   ///Start a timer
   if (typeof o.tickOnce !== 'undefined' && o.tickOnce)
@@ -227,6 +234,11 @@ function update() {
 
   //Update the input class
   i.update();
+
+  if(o?.sceneChange){
+    o.sceneChange = false;
+    if(typeof cs().firstUpdate === "function") cs().firstUpdate(c,o)
+  }
 
   //If there is a custom update function, call it.
   if (typeof customUpdate === "function") {

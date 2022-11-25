@@ -19,7 +19,7 @@
         customUpdate:(c,o)=>{
           timer += 1;
           console.log("first scene")
-          if(timer >= 100)
+          if(timer >= 10)
           {
             console.log("Changing scene")
             o.changeScene(1)
@@ -31,7 +31,7 @@
         }
       },
       {
-        firstUpdate: (c, o) => {
+        firstUpdate(c, o){
           o.drawGrid = true;
           o.fillColor = "black"
           o.maxZoom = 50;
@@ -40,6 +40,11 @@
           o.disableCameraMovement = true;
           o.zoom(10).lookAt(0, 5);
           boot();
+          this.pipes = []
+          this.lastPipeTime = 2
+          this.timeBetweenPipes = 2;
+          this.pipeSpawnX = 2
+
         },
         customUpdate(c, o) {
           v -= 9.8 * o.time;
@@ -52,9 +57,20 @@
             //You hit the ground
             boot()
           }
+          this.lastPipeTime += o.secondsBetweenFrames
+          if(this.lastPipeTime >= this.timeBetweenPipes){
+            this.lastPipeTime -= this.timeBetweenPipes;
+            this.pipes.push({
+              x : this.pipeSpawnX + x,
+            })
+          }
+
         },
         customDraw(c, o) {
           c.fi("green").b().circle(x, y, .2).f()
+          for(let pipe of this.pipes){
+            c.fi("green").fillRect(pipe.x, 5, 1, 5)
+          }
         }
       }
     ]

@@ -154,7 +154,6 @@ c.text = function (text, x, y) {
 }
 c.tc = function(t, x,y){//Draw text centered
   let mt = c.measureText(t)
-  console.log(mt)
   this.text(t, x - mt.width/2, y - mt.fontBoundingBoxAscent/2)
   return this
 }
@@ -194,7 +193,7 @@ function initialBoot() {
     o.currentScene = 0;
     o.sceneChange = false;
     o.changeScene = function(index){
-      o.currentScene = index;
+      o.newSceneIndex = index;
       o.sceneChange = true;
     }
   }
@@ -237,6 +236,7 @@ function update() {
 
   if(o?.sceneChange){
     o.sceneChange = false;
+    o.currentScene = o.newSceneIndex;
     if(typeof cs().firstUpdate === "function") cs().firstUpdate(c,o)
   }
 

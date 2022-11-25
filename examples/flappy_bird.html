@@ -5,33 +5,33 @@
   <script>
     "use strict"
     let v = 0;
-    let y = 0;
-    let x = 0;
+    let y = 0; // The y location of the center of the bird
+    let x = 0; // The x location of the centere of the bird
+    let r = .25; // Radius of the bird
     let timer = 0;
 
-    
+
     function boot() {
       [v, x, y] = [0, 0, 5]
     }
 
     let scenes = [
       {
-        customUpdate:(c,o)=>{
+        customUpdate: (c, o) => {
           timer += 1;
           console.log("first scene")
-          if(timer >= 10)
-          {
+          if (timer >= 10) {
             console.log("Changing scene")
             o.changeScene(1)
           }
         },
-        customUI:(c,o)=>{
+        customUI: (c, o) => {
           let t = "Welcome to this Game"
-          c.fi("Green").fo("40px Arial").tc(t, c.canvas.width/2, c.canvas.height/2)
+          c.fi("Green").fo("40px Arial").tc(t, c.canvas.width / 2, c.canvas.height / 2)
         }
       },
       {
-        firstUpdate(c, o){
+        firstUpdate(c, o) {
           o.drawGrid = true;
           o.fillColor = "black"
           o.maxZoom = 50;
@@ -41,9 +41,12 @@
           o.zoom(10).lookAt(0, 5);
           boot();
           this.pipes = []
-          this.lastPipeTime = 2
-          this.timeBetweenPipes = 2;
-          this.pipeSpawnX = 2
+          this.timeBetweenPipes = 4;
+          this.lastPipeTime = this.timeBetweenPipes;
+          this.pipeSpawnX = 5
+          this.pipeOpening = 4
+          this.pipeRadius = .5
+          this.inCollision = false;
 
         },
         customUpdate(c, o) {
@@ -58,24 +61,44 @@
             boot()
           }
           this.lastPipeTime += o.secondsBetweenFrames
-          if(this.lastPipeTime >= this.timeBetweenPipes){
+          if (this.lastPipeTime >= this.timeBetweenPipes) {
             this.lastPipeTime -= this.timeBetweenPipes;
             this.pipes.push({
-              x : this.pipeSpawnX + x,
+              x: this.pipeSpawnX + x,
+              y: 8,
+              rx: this.pipeRadius,
+              ry: 2,
             })
+            this.pipes.push({
+              x: this.pipeSpawnX + x,
+              y: 2,
+              rx: this.pipeRadius,
+              ry: 2,
+            })
+
+          }
+          //Now check for collisions
+          this.inCollision = false
+          for (const pipe of this.pipes) {
+            if (collisionRectRect(x, y, r, r, pipe.x, pipe.y, this.pipeRadius, 2)) {
+              this.inCollision = true
+            }
           }
 
         },
         customDraw(c, o) {
-          c.fi("green").b().circle(x, y, .2).f()
-          for(let pipe of this.pipes){
-            c.fi("green").fillRect(pipe.x, 5, 1, 5)
+          for (let pipe of this.pipes) {
+            c.fi("green").fillRectCentered(pipe.x, pipe.y, pipe.rx, pipe.ry)
           }
+          if (!this.inCollision)
+            c.fi("blue").fillRectCentered(x, y, r, r)
+          else
+            c.fi("red").fillRectCentered(x,y,r,r)
         }
       }
     ]
 
-    
+
 
     function firstUpdate(c, o) {
       o.scenes = scenes

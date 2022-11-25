@@ -161,6 +161,10 @@ c.circle = function (x, y, r) {
   c.arc(x, y, r, 0, Math.PI * 2)
   return this;
 }
+c.fillRectCentered = function(x, y, rx, ry){
+  c.fillRect( x - rx, y - ry, rx * 2, ry * 2);
+  return this;
+}
 
 function resizeCanvas() {
   //Grab the size of the window
@@ -567,6 +571,11 @@ class i {
       return false;
     }
   }
+}
+
+function collisionRectRect(cx,cy,rx,ry,cx1,cy1,rx1,ry1){
+  const collision =  !(cx - rx > cx1+rx1 || cx + rx < cx1 - rx1 || cy - rx > cy1 + ry1 || cy + ry < cy1 - ry1)
+  return collision;
 }
 
 initialBoot();

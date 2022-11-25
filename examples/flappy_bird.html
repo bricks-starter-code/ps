@@ -77,7 +77,7 @@
           if (this.lastPipeTime >= this.timeBetweenPipes) {
             this.lastPipeTime -= this.timeBetweenPipes;
 
-            let middle = Math.random() *8 + 1;
+            let middle = Math.random() *6 + 2;
             let gap = 4;
             this.addPipes(middle, gap, this.pipeSpawnX + x)
           }
@@ -91,7 +91,7 @@
           }
 
           //Remove pipes that are behind you
-          this.pipes = this.pipes.filter(i=>i.x > x-(r+this.pipeRadius))
+          this.pipes = this.pipes.filter(i=>i.x > x-20)
 
         },
         addPipes(middle, gap, x){

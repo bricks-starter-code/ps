@@ -17,11 +17,12 @@
 
     let scenes = [
       {
+        firstUpdate(c,o){
+          timer = 0;
+        },
         customUpdate: (c, o) => {
-          timer += 1;
-          console.log("first scene")
-          if (timer >= 10) {
-            console.log("Changing scene")
+          timer += o.secondsBetweenFrames
+          if (timer >= 3) {
             o.changeScene(1)
           }
         },
@@ -32,6 +33,9 @@
       },
       {
         firstUpdate(c, o) {
+          this.state = "playing"
+          this.deathTimeout = 0
+          this.maxDeathTimeout = 1
           o.drawGrid = true;
           o.fillColor = "black"
           o.maxZoom = 50;
@@ -41,7 +45,7 @@
           o.zoom(10).lookAt(0, 5);
           boot();
           this.pipes = []
-          this.timeBetweenPipes = 4;
+          this.timeBetweenPipes = 3;
           this.lastPipeTime = this.timeBetweenPipes;
           this.pipeSpawnX = 5
           this.pipeOpening = 4
@@ -50,6 +54,14 @@
 
         },
         customUpdate(c, o) {
+          if(this.state != "playing")
+          {
+            this.deathTimeout += o.secondsBetweenFrames
+            if(this.deathTimeout >= this.maxDeathTimeout){
+              o.changeScene(0)
+            }
+            return
+          }
           v -= 9.8 * o.time;
           i.down(" ", () => v = 5)
           y += v * o.time;
@@ -58,40 +70,49 @@
 
           if (y < 0) {
             //You hit the ground
-            //boot()
-            o.changeScene(1)
+            this.state = "dying"
+            this.inCollision = true;              
           }
           this.lastPipeTime += o.secondsBetweenFrames
           if (this.lastPipeTime >= this.timeBetweenPipes) {
             this.lastPipeTime -= this.timeBetweenPipes;
-            this.pipes.push({
-              x: this.pipeSpawnX + x,
-              y: 8,
-              rx: this.pipeRadius,
-              ry: 2,
-            })
-            this.pipes.push({
-              x: this.pipeSpawnX + x,
-              y: 2,
-              rx: this.pipeRadius,
-              ry: 2,
-            })
 
+            let middle = Math.random() *8 + 1;
+            let gap = 4;
+            this.addPipes(middle, gap, this.pipeSpawnX + x)
           }
           //Now check for collisions
           this.inCollision = false
           for (const pipe of this.pipes) {
-            if (collisionRectRect(x, y, r, r, pipe.x, pipe.y, this.pipeRadius, 2)) {
+            if (collisionRectRect(x, y, r, r, pipe.x, pipe.y, pipe.rx, pipe.ry)) {
               this.inCollision = true
+              this.state = "dying"
             }
           }
 
+          //Remove pipes that are behind you
+          this.pipes = this.pipes.filter(i=>i.x > x-(r+this.pipeRadius))
+
+        },
+        addPipes(middle, gap, x){
+            this.pipes.push({
+              x,
+              y: 10,
+              rx: this.pipeRadius,
+              ry: 10-middle-gap/2,
+            })
+            this.pipes.push({
+              x,
+              y: 0,
+              rx: this.pipeRadius,
+              ry: middle-gap/2,
+            })
         },
         customDraw(c, o) {
           for (let pipe of this.pipes) {
             c.fi("green").fillRectCentered(pipe.x, pipe.y, pipe.rx, pipe.ry)
           }
-          if (!this.inCollision)
+          if (this.state == "playing")
             c.fi("blue").fillRectCentered(x, y, r, r)
           else
             c.fi("red").fillRectCentered(x,y,r,r)

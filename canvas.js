@@ -44,36 +44,41 @@ document.title = "PS";
 // Create the options object and populate it with the defaults
 let o = {};
 
-o.width = 0;  //Will store the width of the canvas
-o.height = 0; //Will store the hegiht of the canvas
+function bootOptions() {
 
-o.cameraCenterX = 0; //The x position the camera is looking at
-o.cameraCenterY = 0; //The y position the camera is looking at
+  o.width = 0;  //Will store the width of the canvas
+  o.height = 0; //Will store the hegiht of the canvas
 
-o.isMouseDown = false; //True if the mouse is down
+  o.cameraCenterX = 0; //The x position the camera is looking at
+  o.cameraCenterY = 0; //The y position the camera is looking at
 
-//Helper variables for tracking mouse movement
-o.lastMouseX = 0;
-o.lastMouseY = 0;
+  o.isMouseDown = false; //True if the mouse is down
 
-//Set the default camera zoom
-o.maxZoom = 100;
-o.minZoom = .1
-o.cameraZoom = 1;
+  //Helper variables for tracking mouse movement
+  o.lastMouseX = 0;
+  o.lastMouseY = 0;
 
-//Set the default background color
-o.fillColor = "lightgray"
+  //Set the default camera zoom
+  o.maxZoom = 100;
+  o.minZoom = .1
+  o.cameraZoom = 1;
 
-//Set the frame rate
-o.millisecondsBetweenFrames = 33
-o.secondsBetweenFrames = 1 / o.millisecondsBetweenFrames
-o.time = o.secondsBetweenFrames;
+  //Set the default background color
+  o.fillColor = "lightgray"
 
-///Uncomment to disable mouse panning and zooming
-//o.disableCameraMovement = true;
+  //Set the frame rate
+  o.millisecondsBetweenFrames = 33
+  o.secondsBetweenFrames = 1 / o.millisecondsBetweenFrames
+  o.time = o.secondsBetweenFrames;
 
-//Uncomment if update should only be run once
-//o.tickOne = true;
+  //Disabled by default
+  o.disableCameraMovement = false;
+  o.tickOne = false;
+  o.drawGrid = false
+
+}
+
+bootOptions();
 
 let c;
 let canvas
@@ -152,17 +157,17 @@ c.text = function (text, x, y) {
   c.fillText(text, x, y);
   return this;
 }
-c.tc = function(t, x,y){//Draw text centered
+c.tc = function (t, x, y) {//Draw text centered
   let mt = c.measureText(t)
-  this.text(t, x - mt.width/2, y - mt.fontBoundingBoxAscent/2)
+  this.text(t, x - mt.width / 2, y - mt.fontBoundingBoxAscent / 2)
   return this
 }
 c.circle = function (x, y, r) {
   c.arc(x, y, r, 0, Math.PI * 2)
   return this;
 }
-c.fillRectCentered = function(x, y, rx, ry){
-  c.fillRect( x - rx, y - ry, rx * 2, ry * 2);
+c.fillRectCentered = function (x, y, rx, ry) {
+  c.fillRect(x - rx, y - ry, rx * 2, ry * 2);
   return this;
 }
 
@@ -176,7 +181,7 @@ function resizeCanvas() {
   canvas.height = o.height;
 }
 
-function cs(){
+function cs() {
   return o.scenes[o.currentScene];
 }
 
@@ -193,15 +198,16 @@ function initialBoot() {
   //Call the firstUpdate function if it exists (only called once)
   if (typeof firstUpdate === "function") firstUpdate(c, o);
 
-  if(o.scenes){
+  if (o.scenes) {
     o.currentScene = 0;
     o.sceneChange = false;
-    o.changeScene = function(index){
+    o.changeScene = function (index) {
       o.newSceneIndex = index;
       o.sceneChange = true;
+      bootOptions()
     }
   }
-  if(typeof cs().firstUpdate === "function") cs().firstUpdate(c,o)
+  if (typeof cs().firstUpdate === "function") cs().firstUpdate(c, o)
 
   ///Start a timer
   if (typeof o.tickOnce !== 'undefined' && o.tickOnce)
@@ -238,17 +244,17 @@ function update() {
   //Update the input class
   i.update();
 
-  if(o?.sceneChange){
+  if (o?.sceneChange) {
     o.sceneChange = false;
     o.currentScene = o.newSceneIndex;
-    if(typeof cs().firstUpdate === "function") cs().firstUpdate(c,o)
+    if (typeof cs().firstUpdate === "function") cs().firstUpdate(c, o)
   }
 
   //If there is a custom update function, call it.
   if (typeof customUpdate === "function") {
     customUpdate(c, o);
   }
-  if(typeof cs().customUpdate === "function") cs().customUpdate(c,o)
+  if (typeof cs().customUpdate === "function") cs().customUpdate(c, o)
 
 
   drawCanvas();       ///Draw the canvas
@@ -332,14 +338,14 @@ function drawCanvas() {
   if (typeof customDraw === "function") {
     customDraw(c, o);
   }
-  if(typeof cs().customDraw === "function") cs().customDraw(c,o)
+  if (typeof cs().customDraw === "function") cs().customDraw(c, o)
 
 
   //Restore to pre-camera transform state
   c.restore();
 
   //Call customUI if the user has created this function
-  if(typeof cs().customUI === "function") cs().customUI(c,o)
+  if (typeof cs().customUI === "function") cs().customUI(c, o)
 
 }
 
@@ -573,8 +579,8 @@ class i {
   }
 }
 
-function collisionRectRect(cx,cy,rx,ry,cx1,cy1,rx1,ry1){
-  const collision =  !(cx - rx > cx1+rx1 || cx + rx < cx1 - rx1 || cy - rx > cy1 + ry1 || cy + ry < cy1 - ry1)
+function collisionRectRect(cx, cy, rx, ry, cx1, cy1, rx1, ry1) {
+  const collision = !(cx - rx > cx1 + rx1 || cx + rx < cx1 - rx1 || cy - rx > cy1 + ry1 || cy + ry < cy1 - ry1)
   return collision;
 }
 

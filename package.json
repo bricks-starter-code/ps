@@ -10,7 +10,7 @@
     "example": "examples"
   },
   "scripts": {
-    "minify": "./node_modules/uglify-js/bin/uglifyjs canvas.js > canvas.min.js && cp canvas.js ./examples/canvas.js && cp canvas.min.js ./bin/canvas.min.js",
+    "minify": "./node_modules/uglify-js/bin/uglifyjs canvas.js --mangle --compress > canvas.min.js && cp canvas.js ./examples/canvas.js && cp canvas.min.js ./bin/canvas.min.js",
     "watch": "nodemon --exec \"npm run minify\" --watch ./canvas.js"
   },
   "repository": {

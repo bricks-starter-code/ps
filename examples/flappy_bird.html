@@ -58,7 +58,8 @@
 
           if (y < 0) {
             //You hit the ground
-            boot()
+            //boot()
+            o.changeScene(1)
           }
           this.lastPipeTime += o.secondsBetweenFrames
           if (this.lastPipeTime >= this.timeBetweenPipes) {

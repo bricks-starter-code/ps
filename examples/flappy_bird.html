@@ -4,11 +4,7 @@
 <body>
   <script>
     "use strict"
-    let v = 0;
-    let y = 0; // The y location of the center of the bird
-    let x = 0; // The x location of the centere of the bird
-    let r = .25; // Radius of the bird
-    let timer = 0;
+
 
 
     function boot() {
@@ -17,7 +13,7 @@
 
     let scenes = [
       {
-        firstUpdate(c,o){
+        firstUpdate(c, o) {
           timer = 0;
         },
         customUpdate: (c, o) => {
@@ -43,7 +39,11 @@
           o.cameraZoom = 50;
           o.disableCameraMovement = true;
           o.zoom(10).lookAt(0, 5);
-          boot();
+          this.v = 0;
+          this.y = 0; // The y location of the center of the bird
+          this.x = 0; // The x location of the centere of the bird
+          this.r = .25; // Radius of the bird
+          this.timer = 0;
           this.pipes = []
           this.timeBetweenPipes = 3;
           this.lastPipeTime = this.timeBetweenPipes;
@@ -54,68 +54,64 @@
 
         },
         customUpdate(c, o) {
-          if(this.state != "playing")
-          {
+          if (this.state != "playing") {
             this.deathTimeout += o.secondsBetweenFrames
-            if(this.deathTimeout >= this.maxDeathTimeout){
+            if (this.deathTimeout >= this.maxDeathTimeout) {
               o.changeScene(0)
             }
             return
           }
-          v -= 9.8 * o.time;
+          this.v -= 9.8 * o.time;
           i.down(" ", () => v = 5)
-          y += v * o.time;
-          x += o.time;
-          o.lookAt(x, 5);
+          this.y += this.v * o.time;
+          this.x += o.time;
+          o.lookAt(this.x, 5);
 
-          if (y < 0) {
+          if (this.y < 0) {
             //You hit the ground
             this.state = "dying"
-            this.inCollision = true;              
+            this.inCollision = true;
           }
           this.lastPipeTime += o.secondsBetweenFrames
           if (this.lastPipeTime >= this.timeBetweenPipes) {
             this.lastPipeTime -= this.timeBetweenPipes;
 
-            let middle = Math.random() *6 + 2;
+            let middle = Math.random() * 6 + 2;
             let gap = 4;
             this.addPipes(middle, gap, this.pipeSpawnX + x)
           }
           //Now check for collisions
           this.inCollision = false
           for (const pipe of this.pipes) {
-            if (collisionRectRect(x, y, r, r, pipe.x, pipe.y, pipe.rx, pipe.ry)) {
+            if (collisionRectRect(this.x, this.y, this.r, this.r, pipe.x, pipe.y, pipe.rx, pipe.ry)) {
               this.inCollision = true
               this.state = "dying"
             }
           }
 
           //Remove pipes that are behind you
-          this.pipes = this.pipes.filter(i=>i.x > x-20)
-
+          this.pipes = this.pipes.filter(i => i.x > this.x - 20)
         },
-        addPipes(middle, gap, x){
-            this.pipes.push({
-              x,
-              y: 10,
-              rx: this.pipeRadius,
-              ry: 10-middle-gap/2,
-            })
-            this.pipes.push({
-              x,
-              y: 0,
-              rx: this.pipeRadius,
-              ry: middle-gap/2,
-            })
+        addPipes(middle, gap, x) {
+          this.pipes.push({
+            x,
+            y: 10,
+            rx: this.pipeRadius,
+            ry: 10 - middle - gap / 2,
+          })
+          this.pipes.push({
+            x,
+            y: 0,
+            rx: this.pipeRadius,
+            ry: middle - gap / 2,
+          })
         },
         customDraw(c, o) {
-          for (let pipe of this.pipes) {
-            c.fi("green").fillRectCentered(pipe.x, pipe.y, pipe.rx, pipe.ry)
-          }
+          this.pipes.forEach(pipe=>c.fi("green").fillRectCentered(pipe.x, pipe.y, pipe.rx, pipe.ry))
           if (this.state == "playing")
-            c.fi("blue").fillRectCentered(x, y, r, r)
+            c.fi("blue").fillRectCentered(this.x, this.y, this.r, this.r)
           else
-            c.fi("red").fillRectCentered(x,y,r,r)
+            c.fi("red").fillRectCentered(this.x, this.y, this.r, this.r)
         }
       }
     ]

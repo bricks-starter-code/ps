@@ -17,8 +17,7 @@
 // having to add it manually, this keeping the html code to a minimum.
 document.body.innerHTML += "<canvas id='canv' oncontextmenu='return false;'></canvas>";
 
-// Add the link that sets the favicon
-// See https://gist.github.com/chrisyip/1403858
+// Add the link that sets the favicon, see https://gist.github.com/chrisyip/1403858
 var link = document.createElement('link');
 link.href = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
 link.rel = 'icon';
@@ -76,7 +75,6 @@ function bootOptions() {
   o.tickOne = false;
   o.drawGrid = false;
   o.drawGridInFront = false; // True to draw the grid after everything else
-
 }
 
 bootOptions();
@@ -178,23 +176,30 @@ function resizeCanvas() {
 }
 
 function cs() {
+  if (!o.scenes) return null
   return o.scenes[o.currentScene];
+}
+
+function isFunc(reference) {
+  return typeof reference === "function"
+
 }
 
 ///This gets called once when the page is completetly loaded.
 ///Think main()
 function initialBoot() {
 
-  i.attach(document)
+  i.attach(document) //Start the input handling
 
   ///Make sure everything is the right size
   resizeCanvas();
 
-
   //Call the firstUpdate function if it exists (only called once)
-  if (typeof firstUpdate === "function") firstUpdate(c, o);
+  if(typeof firstUpdate === "function"){
+    firstUpdate(c, o)
+  }
 
-  if (o.scenes) {
+  if (o.scenes) { //Bootstrap the scene architecture as needed
     o.currentScene = 0;
     o.sceneChange = false;
     o.changeScene = function (index) {
@@ -202,15 +207,13 @@ function initialBoot() {
       o.sceneChange = true;
       bootOptions()
     }
+    typeof cs().firstUpdate === "function" ? cs().firstUpdate(c, o) : {}
+    
   }
-  if (typeof cs().firstUpdate === "function") cs().firstUpdate(c, o)
 
   ///Start a timer
-  if (typeof o.tickOnce !== 'undefined' && o.tickOnce)
-    console.log("Ticking only once.")
-  else {
-    setInterval(tick, o.millisecondsBetweenFrames);    								///Initialize the timer
-  }
+  if (!(typeof o.tickOnce !== 'undefined' && o.tickOnce))
+    setInterval(tick, o.millisecondsBetweenFrames);///Initialize the timer
 }
 
 ///This gets called evertime the timer ticks
@@ -240,14 +243,14 @@ function update() {
   if (o?.sceneChange) {
     o.sceneChange = false;
     o.currentScene = o.newSceneIndex;
-    if (typeof cs().firstUpdate === "function") cs().firstUpdate(c, o)
+    if (typeof cs()?.firstUpdate === "function") cs().firstUpdate(c, o)
   }
 
   //If there is a custom update function, call it.
   if (typeof customUpdate === "function") {
     customUpdate(c, o);
   }
-  if (typeof cs().customUpdate === "function") cs().customUpdate(c, o)
+  if (typeof cs()?.customUpdate === "function") cs().customUpdate(c, o)
 
 
   drawCanvas();       ///Draw the canvas
@@ -337,7 +340,7 @@ function drawCanvas() {
   if (typeof customDraw === "function") {
     customDraw(c, o);
   }
-  if (typeof cs().customDraw === "function") cs().customDraw(c, o)
+  if (typeof cs()?.customDraw === "function") cs().customDraw(c, o)
 
 
   //Restore to pre-camera transform state
@@ -347,9 +350,7 @@ function drawCanvas() {
     drawTheGrid()
 
   //Call customUI if the user has created this function
-  if (typeof cs().customUI === "function") cs().customUI(c, o)
-
-
+  if (typeof cs()?.customUI === "function") cs().customUI(c, o)
 }
 
 

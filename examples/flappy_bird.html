@@ -10,22 +10,19 @@
         firstUpdate(c, o) {
           this.timer = 0;
         },
-        customUpdate(c, o){
+        customUpdate(c, o) {
           this.timer += o.secondsBetweenFrames
           if (this.timer >= 3) {
             o.changeScene(1)
           }
         },
-        customUI(c, o){
-          let t = "Welcome to this Game"
-          c.fi("Green").fo("40px Arial").tc(t, c.canvas.width / 2, c.canvas.height / 2)
+        customUI(c, o) {
+          c.fi("Green").fo("40px Arial").tc("Welcome to this Game", c.canvas.width / 2, c.canvas.height / 2)
         }
       },
       {
         firstUpdate(c, o) {
-          this.state = "playing"
-          this.deathTimeout = 0
-          this.maxDeathTimeout = 1
+          //Set options for ps
           o.drawGrid = true;
           o.drawGridInFront = true
           o.fillColor = "black"
@@ -34,6 +31,11 @@
           o.cameraZoom = 50;
           o.disableCameraMovement = true;
           o.zoom(10).lookAt(0, 5);
+
+          //Set variables we will use in this scene
+          this.state = "playing"
+          this.deathTimeout = 0
+          this.maxDeathTimeout = 1
           this.v = 0;
           this.y = 5; // The y location of the center of the bird
           this.x = 0; // The x location of the centere of the bird
@@ -56,14 +58,14 @@
             }
             return
           }
-          this.v -= 9.8 * o.time;
+          this.v -= 9.8 * o.time; // Apply the downwad force of gravity
           i.down(" ", () => this.v = 5)
           this.y += this.v * o.time;
           this.x += o.time;
           o.lookAt(this.x, 5);
 
           if (this.y - this.r <= 0 || this.y + this.r >= 10) {
-            //You hit the ground
+            //You hit the ground or the top
             this.state = "dying"
             this.inCollision = true;
           }
@@ -88,29 +90,15 @@
           this.pipes = this.pipes.filter(i => i.x > this.x - 20)
         },
         addPipes(middle, gap, x) {
-          this.pipes.push({
-            x,
-            y: 10,
-            rx: this.pipeRadius,
-            ry: 10 - middle - gap / 2,
-          })
-          this.pipes.push({
-            x,
-            y: 0,
-            rx: this.pipeRadius,
-            ry: middle - gap / 2,
-          })
+          this.pipes.push({ x, y: 10, rx: this.pipeRadius, ry: 10 - middle - gap / 2, })
+          this.pipes.push({ x, y: 0, rx: this.pipeRadius, ry: middle - gap / 2, })
         },
         customDraw(c, o) {
-          this.pipes.forEach(pipe=>c.fi("green").fillRectCentered(pipe.x, pipe.y, pipe.rx, pipe.ry))
+          this.pipes.forEach(pipe => c.fi("green").fillRectCentered(pipe.x, pipe.y, pipe.rx, pipe.ry))
           c.fi(this.state == "playing" ? "blue" : "red").fillRectCentered(this.x, this.y, this.r, this.r)
-          // else
-          //   c.fi("red").fillRectCentered(this.x, this.y, this.r, this.r)
         }
       }
     ]
-
-
 
     function firstUpdate(c, o) {
       o.scenes = scenes

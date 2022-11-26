@@ -74,7 +74,8 @@ function bootOptions() {
   //Disabled by default
   o.disableCameraMovement = false;
   o.tickOne = false;
-  o.drawGrid = false
+  o.drawGrid = false;
+  o.drawGridInFront = false; // True to draw the grid after everything else
 
 }
 
@@ -112,11 +113,6 @@ o.lookAt = function (x, y) {
 o.zoom = function (z) {
   let h = c.canvas.height;
   z = h / z
-  // if(z > o.maxZoom)
-  //   z = o.maxZoom;
-  // if(z < o.minZoom)
-  //   z = o.minZoom;
-
   o.cameraZoom = z;
   return this;
 }
@@ -211,11 +207,8 @@ function initialBoot() {
 
   ///Start a timer
   if (typeof o.tickOnce !== 'undefined' && o.tickOnce)
-    //setTimeout(tick, o.millisecondsBetweenFrames)
     console.log("Ticking only once.")
   else {
-    ///Update the model
-    //update(o);
     setInterval(tick, o.millisecondsBetweenFrames);    								///Initialize the timer
   }
 }
@@ -260,6 +253,67 @@ function update() {
   drawCanvas();       ///Draw the canvas
 }
 
+function drawTheGrid() {
+  //Draw a grid in UI space before anythig else if the user
+  //has requested it
+
+  c.fo("10px Arial").fi("white")
+
+
+  //The coordinates of the upper left (ul) and lower right (lr) coordinates
+  let ulx, uly;
+  [ulx, uly] = o.toWorldSpace(0, 0)
+  let lrx, lry;
+  [lrx, lry] = o.toWorldSpace(c.canvas.width, c.canvas.height)
+
+  let startX, startY, stopX, stopY;
+
+  //Set an arbitrary base
+  let base = 10;
+  let min = Math.min(lrx - ulx, lry - uly);
+  let step = Math.log10(min) / Math.log10(base);
+  step = Math.floor(step - .5);
+  step = Math.pow(base, step);
+
+  startX = parseInt((ulx - step) / step) * step
+  stopX = lrx
+  startY = parseInt((uly - step) / step) * step
+  stopY = lry;
+
+  for (let x = startX; x <= stopX; x += step) {
+    let tx, ty, t2;
+    [tx, ty] = o.toScreenSpace(x, startY);
+    [tx, t2] = o.toScreenSpace(x, stopY);
+    c.strokeStyle = "gray";
+    if (x == 0)
+      c.strokeStyle = "green"
+    c.beginPath()
+    c.moveTo(tx, ty);
+    c.lineTo(tx, t2)
+    c.stroke()
+
+    c.fillStyle = "white"
+    c.fillText(x.toFixed(2), tx + 20, 20);
+  }
+
+  for (let y = startY; y <= stopY; y += step) {
+    let tx, ty, tx2;
+    [tx, ty] = o.toScreenSpace(startX, y);
+    [tx2, ty] = o.toScreenSpace(stopX, y);
+    c.strokeStyle = "gray";
+    if (y == 0)
+      c.strokeStyle = "red"
+    c.beginPath()
+    c.moveTo(tx, ty);
+    c.lineTo(tx2, ty)
+    c.stroke()
+
+    c.fillStyle = "white"
+    c.fillText((-y).toFixed(2), 20, ty + 20);
+  }
+
+}
+
 ///Called whenever the canvas needs to be redrawn
 function drawCanvas() {
   //Update the canvas size in case there has been a change
@@ -269,64 +323,9 @@ function drawCanvas() {
   c.fillStyle = o.fillColor;
   c.fillRect(0, 0, canvas.width, canvas.height);
 
-  //Draw a grid in UI space before anythig else if the user
-  //has requested it
-  if (o.drawGrid) {
-    c.fo("10px Arial").fi("white")
+  if (o.drawGrid && !o.drawGridInFront)
+    drawTheGrid()
 
-
-    //The coordinates of the upper left (ul) and lower right (lr) coordinates
-    let ulx, uly;
-    [ulx, uly] = o.toWorldSpace(0, 0)
-    let lrx, lry;
-    [lrx, lry] = o.toWorldSpace(c.canvas.width, c.canvas.height)
-
-    let startX, startY, stopX, stopY;
-
-    //Set an arbitrary base
-    let base = 10;
-    let min = Math.min(lrx - ulx, lry - uly);
-    let step = Math.log10(min) / Math.log10(base);
-    step = Math.floor(step - .5);
-    step = Math.pow(base, step);
-
-    startX = parseInt((ulx - step) / step) * step
-    stopX = lrx
-    startY = parseInt((uly - step) / step) * step
-    stopY = lry;
-
-    for (let x = startX; x <= stopX; x += step) {
-      let tx, ty, t2;
-      [tx, ty] = o.toScreenSpace(x, startY);
-      [tx, t2] = o.toScreenSpace(x, stopY);
-      c.strokeStyle = "gray";
-      if (x == 0)
-        c.strokeStyle = "green"
-      c.beginPath()
-      c.moveTo(tx, ty);
-      c.lineTo(tx, t2)
-      c.stroke()
-
-      c.fillStyle = "white"
-      c.fillText(x.toFixed(2), tx + 20, 20);
-    }
-
-    for (let y = startY; y <= stopY; y += step) {
-      let tx, ty, tx2;
-      [tx, ty] = o.toScreenSpace(startX, y);
-      [tx2, ty] = o.toScreenSpace(stopX, y);
-      c.strokeStyle = "gray";
-      if (y == 0)
-        c.strokeStyle = "red"
-      c.beginPath()
-      c.moveTo(tx, ty);
-      c.lineTo(tx2, ty)
-      c.stroke()
-
-      c.fillStyle = "white"
-      c.fillText((-y).toFixed(2), 20, ty + 20);
-    }
-  }
 
   //Save transform before we account for the camera
   c.save();
@@ -344,8 +343,12 @@ function drawCanvas() {
   //Restore to pre-camera transform state
   c.restore();
 
+  if (o.drawGrid && o.drawGridInFront)
+    drawTheGrid()
+
   //Call customUI if the user has created this function
   if (typeof cs().customUI === "function") cs().customUI(c, o)
+
 
 }
 
@@ -395,8 +398,6 @@ function mouseWheel(e) {
   let y = e.clientY - (o.height / 2 - o.cameraCenterY)
   x /= o.cameraZoom;
   y /= o.cameraZoom;
-  //x -= (width/2 - o.cameraCenterX);
-  //y -= (height/2 - o.cameraCenterY);
 
   if (e.wheelDelta > 0) {
     o.cameraZoom *= 1.01;
@@ -413,13 +414,10 @@ function mouseWheel(e) {
   }
 
   //Now figure out what the new world space coordinate has changed to
-
   let x2 = e.clientX - (o.width / 2 - o.cameraCenterX);
   let y2 = e.clientY - (o.height / 2 - o.cameraCenterY);
   x2 /= o.cameraZoom;
   y2 /= o.cameraZoom;
-  //x2 -= (width/2 - o.cameraCenterX);
-  //y2 -= (height/2 - o.cameraCenterY);
 
   o.cameraCenterX -= x2 - x;
   o.cameraCenterY -= y2 - y;
@@ -524,41 +522,35 @@ class i {
     document.body.addEventListener('contextmenu', contextmenu);
 
     function keydown(event) {
-      //console.log("Down: " + event.key);
       if (i.keys[event.key] != true)
         i.keysDown[event.key] = true;
       i.keys[event.key] = true;
     }
 
     function keyup(event) {
-      //console.log("Up: " + event.key)
       if (i.keys[event.key] != false)
         i.keysUp[event.key] = true;
       i.keys[event.key] = false;
     }
 
     function mousedown(event) {
-      //console.log("Mouse Down: " + event.button)
       if (i.mouseButtons["" + event.button] != true)
         i.mouseButtonsDown["" + event.button] = true;
       i.mouseButtons["" + event.button] = true;
     }
 
     function mouseup(event) {
-      //console.log("Mouse Up: " + event.button)
       if (i.mouseButtons[event.button] != false)
         i.mouseButtonsUp[event.button] = true;
       i.mouseButtons[event.button] = false;
     }
 
     function mousemove(event) {
-      //console.log("Mouse Move: " + event.clientX + ", " + event.clientY)
       i.mousePositionX = event.clientX;
       i.mousePositionY = event.clientY;
     }
 
     function wheelevent(event) {
-      //console.log("Scroll Delta: " + event.deltaY)
       if (event.deltaY != 0)
         i.mouseScrollDelta = event.deltaY;
     }

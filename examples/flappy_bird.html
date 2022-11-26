@@ -5,24 +5,18 @@
   <script>
     "use strict"
 
-
-
-    function boot() {
-      [v, x, y] = [0, 0, 5]
-    }
-
     let scenes = [
       {
         firstUpdate(c, o) {
-          timer = 0;
+          this.timer = 0;
         },
-        customUpdate: (c, o) => {
-          timer += o.secondsBetweenFrames
-          if (timer >= 3) {
+        customUpdate(c, o){
+          this.timer += o.secondsBetweenFrames
+          if (this.timer >= 3) {
             o.changeScene(1)
           }
         },
-        customUI: (c, o) => {
+        customUI(c, o){
           let t = "Welcome to this Game"
           c.fi("Green").fo("40px Arial").tc(t, c.canvas.width / 2, c.canvas.height / 2)
         }
@@ -40,7 +34,7 @@
           o.disableCameraMovement = true;
           o.zoom(10).lookAt(0, 5);
           this.v = 0;
-          this.y = 0; // The y location of the center of the bird
+          this.y = 5; // The y location of the center of the bird
           this.x = 0; // The x location of the centere of the bird
           this.r = .25; // Radius of the bird
           this.timer = 0;
@@ -62,12 +56,12 @@
             return
           }
           this.v -= 9.8 * o.time;
-          i.down(" ", () => v = 5)
+          i.down(" ", () => this.v = 5)
           this.y += this.v * o.time;
           this.x += o.time;
           o.lookAt(this.x, 5);
 
-          if (this.y < 0) {
+          if (this.y - this.r <= 0 || this.y + this.r >= 10) {
             //You hit the ground
             this.state = "dying"
             this.inCollision = true;
@@ -78,7 +72,7 @@
 
             let middle = Math.random() * 6 + 2;
             let gap = 4;
-            this.addPipes(middle, gap, this.pipeSpawnX + x)
+            this.addPipes(middle, gap, this.pipeSpawnX + this.x)
           }
           //Now check for collisions
           this.inCollision = false
@@ -108,10 +102,9 @@
         },
         customDraw(c, o) {
           this.pipes.forEach(pipe=>c.fi("green").fillRectCentered(pipe.x, pipe.y, pipe.rx, pipe.ry))
-          if (this.state == "playing")
-            c.fi("blue").fillRectCentered(this.x, this.y, this.r, this.r)
-          else
-            c.fi("red").fillRectCentered(this.x, this.y, this.r, this.r)
+          c.fi(this.state == "playing" ? "blue" : "red").fillRectCentered(this.x, this.y, this.r, this.r)
+          // else
+          //   c.fi("red").fillRectCentered(this.x, this.y, this.r, this.r)
         }
       }
     ]

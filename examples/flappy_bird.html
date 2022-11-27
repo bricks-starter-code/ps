@@ -17,7 +17,7 @@
           }
         },
         customUI(c, o) {
-          c.fi("Green").fo("40px Arial").tc("Welcome to this Game", c.canvas.width / 2, c.canvas.height / 2)
+          $$.fi("Green").fo("40px Arial").tc("Welcome to this Game", c.canvas.width / 2, c.canvas.height / 2)
         }
       },
       {
@@ -94,8 +94,8 @@
           this.pipes.push({ x, y: 0, rx: this.pipeRadius, ry: middle - gap / 2, })
         },
         customDraw(c, o) {
-          this.pipes.forEach(pipe => c.fi("green").fillRectCentered(pipe.x, pipe.y, pipe.rx, pipe.ry))
-          c.fi(this.state == "playing" ? "blue" : "red").fillRectCentered(this.x, this.y, this.r, this.r)
+          this.pipes.forEach(pipe => $$.fi("green").fillRectCentered(pipe.x, pipe.y, pipe.rx, pipe.ry))
+          $$.fi(this.state == "playing" ? "blue" : "red").fillRectCentered(this.x, this.y, this.r, this.r)
         }
       }
     ]

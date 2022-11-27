@@ -115,55 +115,7 @@ o.zoom = function (z) {
   return this;
 }
 
-c.b = function () {
-  c.beginPath();
-  return this;
-}
-c.m = function (x, y) {
-  c.moveTo(x, y)
-  return this;
-}
-c.l = function (x, y) {
-  c.lineTo(x, y);
-  return this;
-}
-c.s = function () {
-  c.stroke();
-  return this;
-}
-c.f = function () {
-  c.fill();
-  return this;
-}
-c.st = function (style) {
-  c.strokeStyle = style;
-  return this;
-}
-c.fi = function (style) {
-  c.fillStyle = style;
-  return this;
-}
-c.fo = function (font) {
-  c.font = font
-  return this;
-}
-c.text = function (text, x, y) {
-  c.fillText(text, x, y);
-  return this;
-}
-c.tc = function (t, x, y) {//Draw text centered
-  let mt = c.measureText(t)
-  this.text(t, x - mt.width / 2, y - mt.fontBoundingBoxAscent / 2)
-  return this
-}
-c.circle = function (x, y, r) {
-  c.arc(x, y, r, 0, Math.PI * 2)
-  return this;
-}
-c.fillRectCentered = function (x, y, rx, ry) {
-  c.fillRect(x - rx, y - ry, rx * 2, ry * 2);
-  return this;
-}
+
 
 function resizeCanvas() {
   //Grab the size of the window
@@ -260,7 +212,7 @@ function drawTheGrid() {
   //Draw a grid in UI space before anythig else if the user
   //has requested it
 
-  c.fo("10px Arial").fi("white")
+  $$.fo("10px Arial").fi("white")
 
 
   //The coordinates of the upper left (ul) and lower right (lr) coordinates

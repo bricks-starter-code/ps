@@ -12,22 +12,22 @@
     }
 
     function customDraw(c, o) {
-      c.st("red").b().m(0, 0).l(100, 100).s();
+      $$.st("red").b().m(0, 0).l(100, 100).s();
     }
 
     function customUI(c, o) {
-      c.fo("20px Arial").fi("white")
-      c.text("Mouse X in screen space: " + o.lastMouseX, 60, 60)
-      c.text("Mouse Y in screen space: " + o.lastMouseY, 60, 80)
+      $$.fo("20px Arial").fi("white")
+      $$.text("Mouse X in screen space: " + o.lastMouseX, 60, 60)
+      $$.text("Mouse Y in screen space: " + o.lastMouseY, 60, 80)
 
       let worldX, worldY;
       [worldX, worldY] = o.toWorldSpace(o.lastMouseX, o.lastMouseY)
-      c.text("Mouse X in world space:" + worldX, 60, 100)
-      c.text("Mouse Y in world space:" + worldY, 60, 120)
+      $$.text("Mouse X in world space:" + worldX, 60, 100)
+      $$.text("Mouse Y in world space:" + worldY, 60, 120)
 
-      c.text("Camera Zoom: " + o.cameraZoom, 60, 140);
-      c.text("Camera Center X: " + o.cameraCenterX, 60, 160)
-      c.text("Camera Center Y: " + o.cameraCenterY, 60, 180)
+      $$.text("Camera Zoom: " + o.cameraZoom, 60, 140);
+      $$.text("Camera Center X: " + o.cameraCenterX, 60, 160)
+      $$.text("Camera Center Y: " + o.cameraCenterY, 60, 180)
     }
 
   </script>

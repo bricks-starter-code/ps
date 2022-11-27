@@ -10,10 +10,10 @@
     "example": "examples"
   },
   "scripts": {
-    "combine" : "./node_modules/uglify-js/bin/uglifyjs canvas.js money.js --beautify > canvas-all.js",
-    "minify": "./node_modules/uglify-js/bin/uglifyjs canvas.js money.js --beautify > canvas-all.js && npm run copy ",
-    "copy":"cp canvas-all.js ./examples/canvas.js && cp canvas-all.js ./bin/canvas.min.js",
-    "watch": "nodemon --exec \"npm run minify\" --watch ./canvas.js"
+    "combine" : "./node_modules/uglify-js/bin/uglifyjs canvas-base.js money.js --beautify > canvas.js && npm run minify",
+    "minify": "./node_modules/uglify-js/bin/uglifyjs canvas.js  > canvas.min.js && npm run copy ",
+    "copy":"cp canvas.js ./examples/canvas.js && cp canvas.min.js ./bin/canvas.min.js",
+    "watch": "nodemon --exec \"npm run combine\" --watch ./canvas-base.js"
   },
   "repository": {
     "type": "git",

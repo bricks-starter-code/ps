@@ -14,16 +14,16 @@
       c.lineWidth = 1 / o.cameraZoom;
 
       let start = o.toWorldSpace(-1, 0)[0]
-      c.st("black").b().m(start, f_x(start));
+      $$.st("black").b().m(start, f_x(start));
       for (let i = 0; i <= c.canvas.width; i += 1) {
         let x= o.toWorldSpace(i, 0)[0];
-        c.l(x, f_x(x))
+        $$.l(x, f_x(x))
       }
-      c.s()
+      $$.s()
     }
 
     function customUI(c, o) {
-      c.fo("20px Arial").fi("black").text("f(x) = x^2", 20, 20)
+      $$.fo("20px Arial").fi("black").text("f(x) = x^2", 20, 20)
     }
 
   </script>

@@ -49,3 +49,9 @@ $$.fillRectCentered = function (x, y, rx, ry) {
   c.fillRect(x - rx, y - ry, rx * 2, ry * 2);
   return this;
 }
+$$.line = function(x,y,x2,y2){
+  c.beginPath()
+  c.moveTo(x,y)
+  c.lineTo(x2,y2)
+  c.stroke()
+}

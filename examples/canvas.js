@@ -409,6 +409,13 @@ $$.fillRectCentered = function(x, y, rx, ry) {
     return this;
 };
 
+$$.line = function(x, y, x2, y2) {
+    c.beginPath();
+    c.moveTo(x, y);
+    c.lineTo(x2, y2);
+    c.stroke();
+};
+
 function drawTheGrid() {
     //Draw a grid in UI space before anythig else if the user
     //has requested it
@@ -433,7 +440,8 @@ function drawTheGrid() {
         let tx, ty, t2;
         [ tx, ty ] = o.toScreenSpace(x, startY);
         [ tx, t2 ] = o.toScreenSpace(x, stopY);
-        c.strokeStyle = "gray";
+        $$.st("black").line(tx - 1, ty, tx - 1, t2);
+        c.strokeStyle = "white";
         if (x == 0) c.strokeStyle = "green";
         c.beginPath();
         c.moveTo(tx, ty);
@@ -441,12 +449,15 @@ function drawTheGrid() {
         c.stroke();
         c.fillStyle = "white";
         c.fillText(x.toFixed(2), tx + 20, 20);
+        c.fillStyle = "black";
+        c.fillText(x.toFixed(2), tx + 20 - 1, 20 - 1);
     }
     for (let y = startY; y <= stopY; y += step) {
         let tx, ty, tx2;
         [ tx, ty ] = o.toScreenSpace(startX, y);
         [ tx2, ty ] = o.toScreenSpace(stopX, y);
-        c.strokeStyle = "gray";
+        $$.st("black").line(tx, ty - 1, tx2, ty - 1);
+        c.strokeStyle = "white";
         if (y == 0) c.strokeStyle = "red";
         c.beginPath();
         c.moveTo(tx, ty);
@@ -454,6 +465,8 @@ function drawTheGrid() {
         c.stroke();
         c.fillStyle = "white";
         c.fillText((-y).toFixed(2), 20, ty + 20);
+        c.fillStyle = "black";
+        c.fillText((-y).toFixed(2), 20 - 1, ty + 20 - 1);
     }
 }
 

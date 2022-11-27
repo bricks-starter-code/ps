@@ -11,10 +11,7 @@
           this.timer = 0;
         },
         customUpdate(c, o) {
-          this.timer += o.secondsBetweenFrames
-          if (this.timer >= 3) {
-            o.changeScene(1)
-          }
+          this.timer  = inc(this.timer, o.secondsBetweenFrames, 3, ()=>o.changeScene(1))
         },
         customUI(c, o) {
           $$.fi("Green").fo("40px Arial").tc("Welcome to this Game", c.canvas.width / 2, c.canvas.height / 2)
@@ -48,16 +45,13 @@
           this.pipeOpening = 4
           this.pipeRadius = .5
           this.inCollision = false;
-
         },
         customUpdate(c, o) {
           if (this.state != "playing") {
-            this.deathTimeout += o.secondsBetweenFrames
-            if (this.deathTimeout >= this.maxDeathTimeout) {
-              o.changeScene(0)
-            }
+            this.deathTimeout = inc(this.deathTimeout, o.secondsBetweenFrames, this.maxDeathTimeout, ()=>o.changeScene(0))
             return
           }
+          //Implied else state == "playing"
           this.v -= 9.8 * o.time; // Apply the downwad force of gravity
           i.down(" ", () => this.v = 5)
           this.y += this.v * o.time;
@@ -69,14 +63,13 @@
             this.state = "dying"
             this.inCollision = true;
           }
-          this.lastPipeTime += o.secondsBetweenFrames
-          if (this.lastPipeTime >= this.timeBetweenPipes) {
-            this.lastPipeTime -= this.timeBetweenPipes;
 
+          this.lastPipeTime = inc(this.lastPipeTime, o.secondsBetweenFrames, this.timeBetweenPipes, ()=>{
             let middle = Math.random() * 6 + 2;
             let gap = 4;
             this.addPipes(middle, gap, this.pipeSpawnX + this.x)
-          }
+          })
+          
           //Now check for collisions
           this.inCollision = false
           for (const pipe of this.pipes) {

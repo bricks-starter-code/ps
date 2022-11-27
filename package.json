@@ -13,7 +13,7 @@
     "start": "nodemon",
     "combine" : "./node_modules/uglify-js/bin/uglifyjs ./src/html.js ./src/options.js ./src/base.js ./src/input.js ./src/money.js ./src/grid.js ./src/mouse.js ./src/tail.js --beautify --comments all > canvas.js && npm run minify",
     "minify": "./node_modules/uglify-js/bin/uglifyjs canvas.js  > canvas.min.js && npm run copy ",
-    "copy":"cp canvas.js ./examples/canvas.js && cp canvas.min.js ./bin/canvas.min.js"
+    "copy":"cp canvas.js ./examples/canvas.js"
   },
   "repository": {
     "type": "git",

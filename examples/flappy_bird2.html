@@ -52,8 +52,10 @@
           if (this.state != "playing") {
             this.deathTimeout = inc(this.deathTimeout, o.secondsBetweenFrames, this.maxDeathTimeout, 
             () => o.changeScene(0),
-            ()=>{o.zoom(interp(this.deathTimeout / this.maxDeathTimeout, 10, 1))
-              .lookAt(this.x, interp(this.deathTimeout/this.maxDeathTimeout, 5, this.y))
+            ()=>{
+              let percent = Math.min(1, 2*this.deathTimeout/(1*this.maxDeathTimeout))
+              o.zoom(interp(percent, 10, 1))
+              .lookAt(this.x, interp(percent, 5, this.y))
             })
             return
           }

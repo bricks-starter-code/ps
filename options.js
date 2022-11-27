@@ -1,3 +1,12 @@
+let c;
+let canvas
+
+canvas = document.getElementById("canv");   ///Get the canvas object
+c = canvas.getContext("2d");
+
+
+
+
 // Create the options object and populate it with the defaults
 let o = {};
 
@@ -33,6 +42,35 @@ function bootOptions() {
   o.tickOne = false;
   o.drawGrid = false;
   o.drawGridInFront = false; // True to draw the grid after everything else
+}
+
+o.toWorldSpace = function (screenX, screenY) {
+  let x = screenX - (o.width / 2 - o.cameraCenterX);
+  let y = screenY - (o.height / 2 - o.cameraCenterY)
+  x /= o.cameraZoom;
+  y /= o.cameraZoom;
+  return [x, y]
+}
+
+o.toScreenSpace = function (worldX, worldY) {
+  let x = worldX * o.cameraZoom;
+  let y = worldY * o.cameraZoom;
+  x += (o.width / 2 - o.cameraCenterX);
+  y += (o.height / 2 - o.cameraCenterY);
+  return [x, y];
+}
+
+o.lookAt = function (x, y) {
+  o.cameraCenterX = x * o.cameraZoom;
+  o.cameraCenterY = y * -o.cameraZoom;
+  return this;
+}
+
+o.zoom = function (z) {
+  let h = c.canvas.height;
+  z = h / z
+  o.cameraZoom = z;
+  return this;
 }
 
 bootOptions();

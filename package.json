@@ -11,7 +11,7 @@
   },
   "scripts": {
     "start": "nodemon",
-    "combine" : "./node_modules/uglify-js/bin/uglifyjs canvas-html.js canvas-options.js canvas-base.js canvas-input.js money.js canvas-tail.js --beautify --comments all > canvas.js && npm run minify",
+    "combine" : "./node_modules/uglify-js/bin/uglifyjs html.js options.js base.js input.js money.js grid.js mouse.js tail.js --beautify --comments all > canvas.js && npm run minify",
     "minify": "./node_modules/uglify-js/bin/uglifyjs canvas.js  > canvas.min.js && npm run copy ",
     "copy":"cp canvas.js ./examples/canvas.js && cp canvas.min.js ./bin/canvas.min.js"
   },

@@ -47,7 +47,15 @@ document.getElementById("canv").addEventListener("mousewheel", mouseWheel);
 
 document.title = "PS";
 
+let c;
+
+let canvas;
+
+canvas = document.getElementById("canv"); ///Get the canvas object
+
+c = canvas.getContext("2d");
 // Create the options object and populate it with the defaults
+
 let o = {};
 
 function bootOptions() {
@@ -75,16 +83,6 @@ function bootOptions() {
     o.drawGrid = false;
     o.drawGridInFront = false; // True to draw the grid after everything else
 }
-
-bootOptions();
-
-let c;
-
-let canvas;
-
-canvas = document.getElementById("canv"); ///Get the canvas object
-
-c = canvas.getContext("2d");
 
 o.toWorldSpace = function(screenX, screenY) {
     let x = screenX - (o.width / 2 - o.cameraCenterX);
@@ -115,6 +113,8 @@ o.zoom = function(z) {
     return this;
 };
 
+bootOptions();
+
 function resizeCanvas() {
     //Grab the size of the window
     o.width = window.innerWidth;
@@ -127,10 +127,6 @@ function resizeCanvas() {
 function cs() {
     if (!o.scenes) return null;
     return o.scenes[o.currentScene];
-}
-
-function isFunc(reference) {
-    return typeof reference === "function";
 }
 ///This gets called once when the page is completetly loaded.
 ///Think main()
@@ -187,54 +183,6 @@ function update() {
     if (typeof cs()?.customUpdate === "function") cs().customUpdate(c, o);
     drawCanvas(); ///Draw the canvas
 }
-
-function drawTheGrid() {
-    //Draw a grid in UI space before anythig else if the user
-    //has requested it
-    $$.fo("10px Arial").fi("white");
-    //The coordinates of the upper left (ul) and lower right (lr) coordinates
-    let ulx, uly;
-    [ ulx, uly ] = o.toWorldSpace(0, 0);
-    let lrx, lry;
-    [ lrx, lry ] = o.toWorldSpace(c.canvas.width, c.canvas.height);
-    let startX, startY, stopX, stopY;
-    //Set an arbitrary base
-    let base = 10;
-    let min = Math.min(lrx - ulx, lry - uly);
-    let step = Math.log10(min) / Math.log10(base);
-    step = Math.floor(step - .5);
-    step = Math.pow(base, step);
-    startX = parseInt((ulx - step) / step) * step;
-    stopX = lrx;
-    startY = parseInt((uly - step) / step) * step;
-    stopY = lry;
-    for (let x = startX; x <= stopX; x += step) {
-        let tx, ty, t2;
-        [ tx, ty ] = o.toScreenSpace(x, startY);
-        [ tx, t2 ] = o.toScreenSpace(x, stopY);
-        c.strokeStyle = "gray";
-        if (x == 0) c.strokeStyle = "green";
-        c.beginPath();
-        c.moveTo(tx, ty);
-        c.lineTo(tx, t2);
-        c.stroke();
-        c.fillStyle = "white";
-        c.fillText(x.toFixed(2), tx + 20, 20);
-    }
-    for (let y = startY; y <= stopY; y += step) {
-        let tx, ty, tx2;
-        [ tx, ty ] = o.toScreenSpace(startX, y);
-        [ tx2, ty ] = o.toScreenSpace(stopX, y);
-        c.strokeStyle = "gray";
-        if (y == 0) c.strokeStyle = "red";
-        c.beginPath();
-        c.moveTo(tx, ty);
-        c.lineTo(tx2, ty);
-        c.stroke();
-        c.fillStyle = "white";
-        c.fillText((-y).toFixed(2), 20, ty + 20);
-    }
-}
 ///Called whenever the canvas needs to be redrawn
 
 function drawCanvas() {
@@ -258,69 +206,6 @@ function drawCanvas() {
     if (o.drawGrid && o.drawGridInFront) drawTheGrid();
     //Call customUI if the user has created this function
     if (typeof cs()?.customUI === "function") cs().customUI(c, o);
-}
-
-function mouseMove(e) {
-    if (isCameraDisabled()) return;
-    let currentMouseX = e.clientX;
-    let currentMouseY = e.clientY;
-    if (o.isMouseDown) {
-        let diffX = currentMouseX - o.lastMouseX;
-        let diffY = currentMouseY - o.lastMouseY;
-        o.cameraCenterX -= diffX;
-        o.cameraCenterY -= diffY;
-    }
-    o.lastMouseX = e.clientX;
-    o.lastMouseY = e.clientY;
-}
-
-function mouseDown(e) {
-    if (isCameraDisabled()) return;
-    let currentMouseX = e.clientX;
-    let currentMouseY = e.clientY;
-    o.lastMouseX = e.clientX;
-    o.lastMouseY = e.clientY;
-    o.isMouseDown = true;
-}
-
-function mouseUp(e) {
-    if (isCameraDisabled()) return;
-    let currentMouseX = e.clientX;
-    let currentMouseY = e.clientY;
-    o.lastMouseX = e.clientX;
-    o.lastMouseY = e.clientY;
-    o.isMouseDown = false;
-}
-
-function mouseWheel(e) {
-    if (isCameraDisabled()) return;
-    //Figure out the current world space coordinate
-    let x = e.clientX - (o.width / 2 - o.cameraCenterX);
-    let y = e.clientY - (o.height / 2 - o.cameraCenterY);
-    x /= o.cameraZoom;
-    y /= o.cameraZoom;
-    if (e.wheelDelta > 0) {
-        o.cameraZoom *= 1.01;
-    } else if (e.wheelDelta < 0) {
-        o.cameraZoom /= 1.01;
-    }
-    if (o.cameraZoom > o.maxZoom) {
-        o.cameraZoom = o.maxZoom;
-    }
-    if (o.cameraZoom < o.minZoom) {
-        o.cameraZoom = o.minZoom;
-    }
-    //Now figure out what the new world space coordinate has changed to
-    let x2 = e.clientX - (o.width / 2 - o.cameraCenterX);
-    let y2 = e.clientY - (o.height / 2 - o.cameraCenterY);
-    x2 /= o.cameraZoom;
-    y2 /= o.cameraZoom;
-    o.cameraCenterX -= x2 - x;
-    o.cameraCenterY -= y2 - y;
-}
-
-function isCameraDisabled() {
-    return typeof o.disableCameraMovement !== "undefined" && o.disableCameraMovement;
 }
 
 class i {
@@ -523,6 +408,117 @@ $$.fillRectCentered = function(x, y, rx, ry) {
     c.fillRect(x - rx, y - ry, rx * 2, ry * 2);
     return this;
 };
+
+function drawTheGrid() {
+    //Draw a grid in UI space before anythig else if the user
+    //has requested it
+    $$.fo("10px Arial").fi("white");
+    //The coordinates of the upper left (ul) and lower right (lr) coordinates
+    let ulx, uly;
+    [ ulx, uly ] = o.toWorldSpace(0, 0);
+    let lrx, lry;
+    [ lrx, lry ] = o.toWorldSpace(c.canvas.width, c.canvas.height);
+    let startX, startY, stopX, stopY;
+    //Set an arbitrary base
+    let base = 10;
+    let min = Math.min(lrx - ulx, lry - uly);
+    let step = Math.log10(min) / Math.log10(base);
+    step = Math.floor(step - .5);
+    step = Math.pow(base, step);
+    startX = parseInt((ulx - step) / step) * step;
+    stopX = lrx;
+    startY = parseInt((uly - step) / step) * step;
+    stopY = lry;
+    for (let x = startX; x <= stopX; x += step) {
+        let tx, ty, t2;
+        [ tx, ty ] = o.toScreenSpace(x, startY);
+        [ tx, t2 ] = o.toScreenSpace(x, stopY);
+        c.strokeStyle = "gray";
+        if (x == 0) c.strokeStyle = "green";
+        c.beginPath();
+        c.moveTo(tx, ty);
+        c.lineTo(tx, t2);
+        c.stroke();
+        c.fillStyle = "white";
+        c.fillText(x.toFixed(2), tx + 20, 20);
+    }
+    for (let y = startY; y <= stopY; y += step) {
+        let tx, ty, tx2;
+        [ tx, ty ] = o.toScreenSpace(startX, y);
+        [ tx2, ty ] = o.toScreenSpace(stopX, y);
+        c.strokeStyle = "gray";
+        if (y == 0) c.strokeStyle = "red";
+        c.beginPath();
+        c.moveTo(tx, ty);
+        c.lineTo(tx2, ty);
+        c.stroke();
+        c.fillStyle = "white";
+        c.fillText((-y).toFixed(2), 20, ty + 20);
+    }
+}
+
+function mouseMove(e) {
+    if (isCameraDisabled()) return;
+    let currentMouseX = e.clientX;
+    let currentMouseY = e.clientY;
+    if (o.isMouseDown) {
+        let diffX = currentMouseX - o.lastMouseX;
+        let diffY = currentMouseY - o.lastMouseY;
+        o.cameraCenterX -= diffX;
+        o.cameraCenterY -= diffY;
+    }
+    o.lastMouseX = e.clientX;
+    o.lastMouseY = e.clientY;
+}
+
+function mouseDown(e) {
+    if (isCameraDisabled()) return;
+    let currentMouseX = e.clientX;
+    let currentMouseY = e.clientY;
+    o.lastMouseX = e.clientX;
+    o.lastMouseY = e.clientY;
+    o.isMouseDown = true;
+}
+
+function mouseUp(e) {
+    if (isCameraDisabled()) return;
+    let currentMouseX = e.clientX;
+    let currentMouseY = e.clientY;
+    o.lastMouseX = e.clientX;
+    o.lastMouseY = e.clientY;
+    o.isMouseDown = false;
+}
+
+function mouseWheel(e) {
+    if (isCameraDisabled()) return;
+    //Figure out the current world space coordinate
+    let x = e.clientX - (o.width / 2 - o.cameraCenterX);
+    let y = e.clientY - (o.height / 2 - o.cameraCenterY);
+    x /= o.cameraZoom;
+    y /= o.cameraZoom;
+    if (e.wheelDelta > 0) {
+        o.cameraZoom *= 1.01;
+    } else if (e.wheelDelta < 0) {
+        o.cameraZoom /= 1.01;
+    }
+    if (o.cameraZoom > o.maxZoom) {
+        o.cameraZoom = o.maxZoom;
+    }
+    if (o.cameraZoom < o.minZoom) {
+        o.cameraZoom = o.minZoom;
+    }
+    //Now figure out what the new world space coordinate has changed to
+    let x2 = e.clientX - (o.width / 2 - o.cameraCenterX);
+    let y2 = e.clientY - (o.height / 2 - o.cameraCenterY);
+    x2 /= o.cameraZoom;
+    y2 /= o.cameraZoom;
+    o.cameraCenterX -= x2 - x;
+    o.cameraCenterY -= y2 - y;
+}
+
+function isCameraDisabled() {
+    return typeof o.disableCameraMovement !== "undefined" && o.disableCameraMovement;
+}
 
 function collisionRectRect(cx, cy, rx, ry, cx1, cy1, rx1, ry1) {
     const collision = !(cx - rx > cx1 + rx1 || cx + rx < cx1 - rx1 || cy - rx > cy1 + ry1 || cy + ry < cy1 - ry1);

@@ -540,4 +540,8 @@ function inc(current, change, max, ifTrue, ifFalse) {
     }
 }
 
+function interp(percent, start, end) {
+    return (1 - percent) * start + percent * end;
+}
+
 initialBoot();

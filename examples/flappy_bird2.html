@@ -1,0 +1,111 @@
+<html>
+<!-- Draw a square with a random color -->
+
+<body>
+  <script>
+    "use strict"
+
+    let scenes = [
+      {
+        firstUpdate(c, o) {
+          this.timer = 0;
+        },
+        customUpdate(c, o) {
+          this.timer = inc(this.timer, o.secondsBetweenFrames, 3, () => o.changeScene(1))
+        },
+        customUI(c, o) {
+          $$.fi("Green").fo("40px Arial").tc("Welcome to this Game", c.canvas.width / 2, c.canvas.height / 2)
+        }
+      },
+      {
+        firstUpdate(c, o) {
+          //Set options for ps
+          o.drawGrid = true;
+          o.drawGridInFront = true
+          o.fillColor = "black"
+          o.maxZoom = 50;
+          o.minZoom = 20;
+          o.cameraZoom = 50;
+          o.disableCameraMovement = true;
+          o.zoom(10).lookAt(0, 5);
+
+          //Set variables we will use in this scene
+          this.state = "playing" //State of the game. Other states include "dying"
+          this.deathTimeout = 0 // How long since we changed the state to "dying"
+          this.maxDeathTimeout = 1 //How long you are "dying" before restarting
+          this.v = 0; //Velocity (in y) of the character
+          this.y = 5; // The y location of the center of the bird
+          this.x = 0; // The x location of the centere of the bird
+          this.r = .25; // Radius of the bird
+          // this.timer = 0;
+          this.pipes = []
+          this.timeBetweenPipes = 3;
+          this.lastPipeTime = this.timeBetweenPipes;
+          this.pipeSpawnX = 5
+          this.pipeOpening = 4
+          this.pipeRadius = .5
+          this.inCollision = false;
+          this.speed = 1
+          this.previousPipes = 0 //How many pipes have we removed
+        },
+        customUpdate(c, o) {
+          if (this.state != "playing") {
+            this.deathTimeout = inc(this.deathTimeout, o.secondsBetweenFrames, this.maxDeathTimeout, 
+            () => o.changeScene(0),
+            ()=>{o.zoom(interp(this.deathTimeout / this.maxDeathTimeout, 10, 1))
+              .lookAt(this.x, interp(this.deathTimeout/this.maxDeathTimeout, 5, this.y))
+            })
+            return
+          }
+          //Implied else state == "playing"
+          this.v -= 9.8 * o.time; // Apply the downwad force of gravity
+          i.down(" ", () => this.v = 5)
+          this.y += this.v * o.time;
+          this.x += o.time * this.speed;
+          o.lookAt(this.x, 5);
+
+          if (this.y - this.r <= 0 || this.y + this.r >= 10) {
+            //You hit the ground or the top
+            this.state = "dying"
+            this.inCollision = true;
+          }
+
+          this.lastPipeTime = inc(this.lastPipeTime, o.secondsBetweenFrames, this.timeBetweenPipes, () => {
+            let middle = Math.random() * 6 + 2;
+            let gap = 4;
+            this.addPipes(middle, gap, this.pipeSpawnX + this.x)
+          })
+
+          //Now check for collisions
+          this.inCollision = false
+          for (const pipe of this.pipes) {
+            if (collisionRectRect(this.x, this.y, this.r, this.r, pipe.x, pipe.y, pipe.rx, pipe.ry)) {
+              this.inCollision = true
+              this.state = "dying"
+            }
+          }
+
+          //Remove pipes that are behind you
+          this.pipes = this.pipes.filter(i => i.x > this.x - 20)
+        },
+        addPipes(middle, gap, x) {
+          this.pipes.push({ x, y: 10, rx: this.pipeRadius, ry: 10 - middle - gap / 2, })
+          this.pipes.push({ x, y: 0, rx: this.pipeRadius, ry: middle - gap / 2, })
+        },
+        customDraw(c, o) {
+          this.pipes.forEach(pipe => $$.fi("green").fillRectCentered(pipe.x, pipe.y, pipe.rx, pipe.ry))
+          $$.fi(this.state == "playing" ? "blue" : "red").fillRectCentered(this.x, this.y, this.r, this.r)
+        }
+      }
+    ]
+
+    function firstUpdate(c, o) {
+      o.scenes = scenes
+    }
+
+  </script>
+  <script src="canvas.js"></script>
+
+</body>
+
+</html>

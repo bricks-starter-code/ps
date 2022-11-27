@@ -1,6 +1,6 @@
 {
   "name": "ps",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Include canvas.js in your .html file, and it will bootstrap a canvas and accompanying update() and draw() functions. It is left to the developer to only add a customUpdate() and customDraw() methods to have realtime (potentially interactive) visualization in a webpage. See index.html for an example of how to include ps.js and how to add the custom methods.",
   "main": "canvas.js",
   "bin": {
@@ -10,18 +10,18 @@
     "example": "examples"
   },
   "scripts": {
-    "combine" : "./node_modules/uglify-js/bin/uglifyjs canvas-base.js money.js --beautify > canvas.js && npm run minify",
+    "start": "nodemon",
+    "combine" : "./node_modules/uglify-js/bin/uglifyjs canvas-html.js canvas-options.js canvas-base.js canvas-input.js money.js canvas-tail.js --beautify --comments all > canvas.js && npm run minify",
     "minify": "./node_modules/uglify-js/bin/uglifyjs canvas.js  > canvas.min.js && npm run copy ",
-    "copy":"cp canvas.js ./examples/canvas.js && cp canvas.min.js ./bin/canvas.min.js",
-    "watch": "nodemon --exec \"npm run combine\" --watch ./canvas-base.js"
+    "copy":"cp canvas.js ./examples/canvas.js && cp canvas.min.js ./bin/canvas.min.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bricksSeeds/ps.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "B. Ricks, @bricksph",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/bricksSeeds/ps/issues"
   },

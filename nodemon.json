@@ -1,0 +1,9 @@
+{
+  "ignore": [
+    "**/bin/**",
+    "**/examples/**",
+    "./canvas.js",
+    "./canvas.min.js"
+  ],
+  "exec": "nodemon --exec \"npm run combine\""
+}

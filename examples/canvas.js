@@ -1,4 +1,20 @@
+/**
+ * Usage:
+ *
+ * In a script tag, put in your custom code
+ * After the your custom script, put in <script src="canvas.js"></script>
+ *
+ * If you have a function called customUpdate(), it will be called on the interval before any of the draw functions
+ * If you have a function called customDraw(), it will be called after update on the same interval. customDraw() is called after centering 0,0 at the center of the screen
+ * If you have a function called customUI(), it will be called after customDraw() in screen space
+ *
+ * If you set a variable called disableCameraMovement to something truthy, events will be ignored
+ * If you set a variable called tickOnce to something truthy, the functions will only be called once.
+ */
+// Automatically add the canvas element to the DOM. This saves the user from
+// having to add it manually, this keeping the html code to a minimum.
 document.body.innerHTML += "<canvas id='canv' oncontextmenu='return false;'></canvas>";
+// Add the link that sets the favicon, see https://gist.github.com/chrisyip/1403858
 
 var link = document.createElement("link");
 
@@ -6,15 +22,19 @@ link.href = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICT
 
 link.rel = "icon";
 
-link.type = "image/x-icon";
+link.type = "image/x-icon"; // no need for HTML5
 
-document.getElementsByTagName("head")[0].appendChild(link);
+document.getElementsByTagName("head")[0].appendChild(link); // for IE6
+// Automatically generate the CSS for the page. This saves the user
+// from having to include a CSS file or adding a style element to the head.
+// These styles remove the margin around the canvas and remove scroll bars
 
 document.body.style.setProperty("margin", "0px");
 
-document.documentElement.style.setProperty("margin", "0px");
+document.documentElement.style.setProperty("margin", "0px"); //Apparently you can't do document.html...https://stackoverflow.com/questions/9362907/how-can-i-reference-the-html-elements-corresponding-dom-object
 
-document.documentElement.style.setProperty("overflow", "hidden");
+document.documentElement.style.setProperty("overflow", "hidden"); //Apparently you can't do document.html...https://stackoverflow.com/questions/9362907/how-can-i-reference-the-html-elements-corresponding-dom-object
+//Add the event hooks so we can respond to the mouse.
 
 document.getElementById("canv").addEventListener("mousemove", mouseMove);
 
@@ -23,30 +43,37 @@ document.getElementById("canv").addEventListener("mousedown", mouseDown);
 document.getElementById("canv").addEventListener("mouseup", mouseUp);
 
 document.getElementById("canv").addEventListener("mousewheel", mouseWheel);
+//Set the title programmatically
 
 document.title = "PS";
 
+// Create the options object and populate it with the defaults
 let o = {};
 
 function bootOptions() {
-    o.width = 0;
-    o.height = 0;
-    o.cameraCenterX = 0;
-    o.cameraCenterY = 0;
-    o.isMouseDown = false;
+    o.width = 0; //Will store the width of the canvas
+    o.height = 0; //Will store the hegiht of the canvas
+    o.cameraCenterX = 0; //The x position the camera is looking at
+    o.cameraCenterY = 0; //The y position the camera is looking at
+    o.isMouseDown = false; //True if the mouse is down
+    //Helper variables for tracking mouse movement
     o.lastMouseX = 0;
     o.lastMouseY = 0;
+    //Set the default camera zoom
     o.maxZoom = 100;
     o.minZoom = .1;
     o.cameraZoom = 1;
+    //Set the default background color
     o.fillColor = "lightgray";
+    //Set the frame rate
     o.millisecondsBetweenFrames = 33;
     o.secondsBetweenFrames = 1 / o.millisecondsBetweenFrames;
     o.time = o.secondsBetweenFrames;
+    //Disabled by default
     o.disableCameraMovement = false;
     o.tickOne = false;
     o.drawGrid = false;
-    o.drawGridInFront = false;
+    o.drawGridInFront = false; // True to draw the grid after everything else
 }
 
 bootOptions();
@@ -55,7 +82,7 @@ let c;
 
 let canvas;
 
-canvas = document.getElementById("canv");
+canvas = document.getElementById("canv"); ///Get the canvas object
 
 c = canvas.getContext("2d");
 
@@ -89,8 +116,10 @@ o.zoom = function(z) {
 };
 
 function resizeCanvas() {
+    //Grab the size of the window
     o.width = window.innerWidth;
     o.height = window.innerHeight;
+    //set the size of the canvas
     canvas.width = o.width;
     canvas.height = o.height;
 }
@@ -103,14 +132,19 @@ function cs() {
 function isFunc(reference) {
     return typeof reference === "function";
 }
+///This gets called once when the page is completetly loaded.
+///Think main()
 
 function initialBoot() {
-    i.attach(document);
+    i.attach(document); //Start the input handling
+    ///Make sure everything is the right size
     resizeCanvas();
+    //Call the firstUpdate function if it exists (only called once)
     if (typeof firstUpdate === "function") {
         firstUpdate(c, o);
     }
     if (o.scenes) {
+        //Bootstrap the scene architecture as needed
         o.currentScene = 0;
         o.sceneChange = false;
         o.changeScene = function(index) {
@@ -120,37 +154,51 @@ function initialBoot() {
         };
         typeof cs().firstUpdate === "function" ? cs().firstUpdate(c, o) : {};
     }
-    if (!(typeof o.tickOnce !== "undefined" && o.tickOnce)) setInterval(tick, o.millisecondsBetweenFrames);
+    ///Start a timer
+    if (!(typeof o.tickOnce !== "undefined" && o.tickOnce)) setInterval(tick, o.millisecondsBetweenFrames); ///Initialize the timer
 }
+///This gets called evertime the timer ticks
 
 function tick() {
-    var currentTime = new Date();
-    var now = currentTime.getTime();
+    ///Respond differently based on the game state
+    //timerID = setTimeout(tick, 33);    ///Restart the timer
+    var currentTime = new Date(); ///Get the current time
+    var now = currentTime.getTime(); ///Get the current time in milliseconds
+    //Update the global model
     update();
     drawCanvas();
 }
+///This gets called whenever the window size changes and the
+///canvas neends to adjust.
+///This also adjusts the content pane
 
 function update() {
+    //Update the input class
     i.update();
     if (o?.sceneChange) {
         o.sceneChange = false;
         o.currentScene = o.newSceneIndex;
         if (typeof cs()?.firstUpdate === "function") cs().firstUpdate(c, o);
     }
+    //If there is a custom update function, call it.
     if (typeof customUpdate === "function") {
         customUpdate(c, o);
     }
     if (typeof cs()?.customUpdate === "function") cs().customUpdate(c, o);
-    drawCanvas();
+    drawCanvas(); ///Draw the canvas
 }
 
 function drawTheGrid() {
+    //Draw a grid in UI space before anythig else if the user
+    //has requested it
     $$.fo("10px Arial").fi("white");
+    //The coordinates of the upper left (ul) and lower right (lr) coordinates
     let ulx, uly;
     [ ulx, uly ] = o.toWorldSpace(0, 0);
     let lrx, lry;
     [ lrx, lry ] = o.toWorldSpace(c.canvas.width, c.canvas.height);
     let startX, startY, stopX, stopY;
+    //Set an arbitrary base
     let base = 10;
     let min = Math.min(lrx - ulx, lry - uly);
     let step = Math.log10(min) / Math.log10(base);
@@ -187,21 +235,28 @@ function drawTheGrid() {
         c.fillText((-y).toFixed(2), 20, ty + 20);
     }
 }
+///Called whenever the canvas needs to be redrawn
 
 function drawCanvas() {
+    //Update the canvas size in case there has been a change
     resizeCanvas();
+    ///Clear the rectangles
     c.fillStyle = o.fillColor;
     c.fillRect(0, 0, canvas.width, canvas.height);
     if (o.drawGrid && !o.drawGridInFront) drawTheGrid();
+    //Save transform before we account for the camera
     c.save();
+    //Adjust for the camera
     c.translate(o.width / 2 - o.cameraCenterX, o.height / 2 - o.cameraCenterY);
     c.scale(o.cameraZoom, -o.cameraZoom);
     if (typeof customDraw === "function") {
         customDraw(c, o);
     }
     if (typeof cs()?.customDraw === "function") cs().customDraw(c, o);
+    //Restore to pre-camera transform state
     c.restore();
     if (o.drawGrid && o.drawGridInFront) drawTheGrid();
+    //Call customUI if the user has created this function
     if (typeof cs()?.customUI === "function") cs().customUI(c, o);
 }
 
@@ -239,6 +294,7 @@ function mouseUp(e) {
 
 function mouseWheel(e) {
     if (isCameraDisabled()) return;
+    //Figure out the current world space coordinate
     let x = e.clientX - (o.width / 2 - o.cameraCenterX);
     let y = e.clientY - (o.height / 2 - o.cameraCenterY);
     x /= o.cameraZoom;
@@ -254,6 +310,7 @@ function mouseWheel(e) {
     if (o.cameraZoom < o.minZoom) {
         o.cameraZoom = o.minZoom;
     }
+    //Now figure out what the new world space coordinate has changed to
     let x2 = e.clientX - (o.width / 2 - o.cameraCenterX);
     let y2 = e.clientY - (o.height / 2 - o.cameraCenterY);
     x2 /= o.cameraZoom;
@@ -268,23 +325,42 @@ function isCameraDisabled() {
 
 class i {
     static keys = [];
+    // Keys that are currently down as reported by js events
     static keysDown = [];
+    //Keys that went down this frame as reported by js events
     static keysUp = [];
+    //Keys that went up this frame as reported by js events
     static frameKeysDown = [];
+    //Keys that will be reported as going down next frame
     static frameKeysUp = [];
+    //Keys that will be reported as going up next frame
     static mouseButtons = [];
+    //Mouse buttons that are currently down as reported by js events
     static mouseButtonsDown = [];
+    //Mouse buttons that went down sometime this frame as reported by js events
     static mouseButtonsUp = [];
+    //Mouse buttons that went up sometime this frame as reported by js events
     static frameMouseButtonsDown = [];
+    //Mouse buttons that will be reported as going down next frame
     static frameMouseButtonUp = [];
+    //Mouse buttons that will be reported as going up next frame
     static mousePositionX;
+    //Mouse position x as reported by js events
     static mousePositionY;
+    //Mouse position y as report by js events
     static frameMousePositionX;
+    //The mouse position x that will be reported next frame
     static frameMousePositionY;
+    //The mouse position y that will be reported next frame
     static lastFrameMousePositionX;
+    //The mouse x position from the previously reported frame
     static lastFrameMousePositionY;
+    //The mouse y position from the previously reported frame
     static scrollWheel = 0;
+    //The scroll wheel position as report by js events
     static frameScrollWheel = 0;
+    //The scroll wheel change that will be reported next frame
+    //Update the frame-centric variables
     static update() {
         this.frameKeysDown = this.keysDown;
         this.frameKeysUp = this.keysUp;
@@ -301,6 +377,7 @@ class i {
         this.frameScrollWheel = this.scrollWheel;
         this.scrollWheel = 0;
     }
+    //Get the values of different input states
     static getKey(key) {
         return this.keys[key];
     }
@@ -338,6 +415,7 @@ class i {
         };
     }
     static attach(document) {
+        //Setup all the key listeners
         document.body.addEventListener("keydown", keydown);
         document.body.addEventListener("keyup", keyup);
         document.body.addEventListener("keypress", keypress);
@@ -369,7 +447,11 @@ class i {
         function wheelevent(event) {
             if (event.deltaY != 0) i.mouseScrollDelta = event.deltaY;
         }
-        function keypress(event) {}
+        function keypress(event) {
+            //console.log(`Keys: ${event.key}, Modifier keys: Control: ${event.ctrlKey}, Alt: ${event.altKey}, Shift: ${event.shiftKey}, Meta Key: ${event.metaKey}`);
+        }
+        // Based on https://stackoverflow.com/questions/381795/how-to-disable-right-click-context-menu-in-javascript
+        // Kills the right mouse context menu
         function contextmenu(event) {
             if (event.preventDefault != undefined) event.preventDefault();
             if (event.stopPropagation != undefined) event.stopPropagation();
@@ -377,13 +459,6 @@ class i {
         }
     }
 }
-
-function collisionRectRect(cx, cy, rx, ry, cx1, cy1, rx1, ry1) {
-    const collision = !(cx - rx > cx1 + rx1 || cx + rx < cx1 - rx1 || cy - rx > cy1 + ry1 || cy + ry < cy1 - ry1);
-    return collision;
-}
-
-initialBoot();
 
 $$ = {};
 
@@ -433,6 +508,7 @@ $$.text = function(text, x, y) {
 };
 
 $$.tc = function(t, x, y) {
+    //Draw text centered
     let mt = c.measureText(t);
     this.text(t, x - mt.width / 2, y - mt.fontBoundingBoxAscent / 2);
     return this;
@@ -447,3 +523,10 @@ $$.fillRectCentered = function(x, y, rx, ry) {
     c.fillRect(x - rx, y - ry, rx * 2, ry * 2);
     return this;
 };
+
+function collisionRectRect(cx, cy, rx, ry, cx1, cy1, rx1, ry1) {
+    const collision = !(cx - rx > cx1 + rx1 || cx + rx < cx1 - rx1 || cy - rx > cy1 + ry1 || cy + ry < cy1 - ry1);
+    return collision;
+}
+
+initialBoot();

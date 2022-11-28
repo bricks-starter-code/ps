@@ -128,6 +128,18 @@ function cs() {
     if (!o.scenes) return null;
     return o.scenes[o.currentScene];
 }
+
+function findGameObject(name) {
+    if (!cs()) return null;
+    if (!cs().gameObjects) return null;
+    //Implied else
+    return cs().gameObjects.find(go => go.started && go.name == name);
+}
+
+function getGameObjects() {
+    if (!cs()) return null;
+    return cs().gameObjects;
+}
 ///This gets called once when the page is completetly loaded.
 ///Think main()
 
@@ -156,12 +168,9 @@ function initialBoot() {
 ///This gets called evertime the timer ticks
 
 function tick() {
-    ///Respond differently based on the game state
-    //timerID = setTimeout(tick, 33);    ///Restart the timer
-    var currentTime = new Date(); ///Get the current time
-    var now = currentTime.getTime(); ///Get the current time in milliseconds
     //Update the global model
     update();
+    //Draw the global model
     drawCanvas();
 }
 ///This gets called whenever the window size changes and the
@@ -179,6 +188,17 @@ function update() {
     //If there is a custom update function, call it.
     if (typeof customUpdate === "function") {
         customUpdate(c, o);
+    }
+    if (cs().gameObjects) {
+        cs().gameObjects.forEach(go => {
+            if (!go.started) {
+                if (typeof go.start == "function") go.start(c, o);
+                go.started = true;
+            }
+        });
+        cs().gameObjects.forEach(go => {
+            if (typeof go.update === "function") go.update(c, o);
+        });
     }
     if (typeof cs()?.customUpdate === "function") cs().customUpdate(c, o);
     drawCanvas(); ///Draw the canvas
@@ -199,6 +219,11 @@ function drawCanvas() {
     c.scale(o.cameraZoom, -o.cameraZoom);
     if (typeof customDraw === "function") {
         customDraw(c, o);
+    }
+    if (cs().gameObjects) {
+        cs().gameObjects.forEach(go => {
+            if (typeof go.draw === "function") go.draw(c, o);
+        });
     }
     if (typeof cs()?.customDraw === "function") cs().customDraw(c, o);
     //Restore to pre-camera transform state

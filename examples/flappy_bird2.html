@@ -5,6 +5,151 @@
   <script>
     "use strict"
 
+    let prefabs = [
+      {
+        name: "cloud",
+        startX: 0,
+        startY: 0,
+        start(c, o) {
+          this.x = this.startX
+          this.y = this.startY
+        },
+        update(c, o) {
+          this.x += o.secondsBetweenFrames / 10
+        },
+        draw(c, o) {
+          $$.fi("white").fillRectCentered(this.x, this.y, 1, .5)
+        }
+      },
+      {
+        name: "pipe",
+        startX: 0,
+        startY: 0,
+        startRX: 1,
+        startRY: 1,
+        start(c, o) {
+          this.x = this.startX;
+          this.y = this.startY;
+          this.rx = this.startRX;
+          this.ry = this.startRY;
+        },
+        update(c, o) {
+
+        },
+        draw(c, o) {
+          $$.fi("green").fillRectCentered(this.x, this.y, this.rx, this.ry)
+        }
+      },
+      {
+        name: "bird",
+        startX: 0,
+        startY: 0,
+        startV: 0,
+        start(c, o) {
+          this.x = this.startX;
+          this.y = this.startY;
+          this.v = this.startV;
+          this.r = .25;
+          this.speed = 1;
+
+        },
+        update(c, o) {
+          let mcp = findGameObject("mcp")
+          if (!mcp) return;
+
+          if (mcp.state && mcp.state != "playing")
+            return
+
+          this.v -= 9.8 * o.time; // Apply the downwad force of gravity
+          i.down(" ", () => this.v = 5)
+          this.y += this.v * o.time;
+          this.x += o.time * this.speed;
+          o.lookAt(this.x, 5);
+
+          if (this.y - this.r <= 0 || this.y + this.r >= 10) {
+            //You hit the ground or the top
+            mcp.state = "dying"
+            mcp.inCollision = true;
+          }
+        },
+        draw(c, o) {
+          let mcp = findGameObject("mcp")
+          if (!mcp) return;
+
+          $$.fi(mcp.state == "playing" ? "blue" : "red").fillRectCentered(this.x, this.y, this.r, this.r)
+        }
+      },
+      {
+        name: "mcp",
+        start(c, o) {
+          this.state = "playing"
+          this.deathTimeout = 0;
+          this.maxDeathTimeout = 1;
+          this.timeBetweenPipes = 3;
+          this.lastPipeTime = this.timeBetweenPipes;
+          this.pipeSpawnX = 5
+          this.pipeOpening = 4
+          this.pipeRadius = .5
+          this.inCollision = false;
+          this.speed = 1
+          this.previousPipes = 0 //How many pipes have we removed
+
+          //Create the background
+          let cloudPrefab = prefabs.find(p => p.name == "cloud")
+          let cloud = Object.create(cloudPrefab)
+          cloud.startX = -3
+          cloud.startY = 6
+          getGameObjects().push(cloud);
+
+          //Create the "bird"
+          let birdPrefab = prefabs.find(p => p.name == "bird");
+          let bird = Object.create(birdPrefab);
+          bird.startX = 0;
+          bird.startY = 5;
+          bird.startV = 0;
+          getGameObjects().push(bird);
+        },
+        update(c, o) {
+          let bird = findGameObject("bird");
+          if(!bird) return;
+          if (this.state && this.state != "playing") {
+            this.deathTimeout = inc(this.deathTimeout, o.secondsBetweenFrames, this.maxDeathTimeout,
+              () => o.changeScene(0),
+              () => {
+                let percent = Math.min(1, 2 * this.deathTimeout / (1 * this.maxDeathTimeout))
+                o.zoom(interp(percent, 10, 1))
+                  .lookAt(bird.x, interp(percent, 5, bird.y))
+              })
+            return
+          }
+
+          let birdX = bird.x;
+          this.lastPipeTime = inc(this.lastPipeTime, o.secondsBetweenFrames, this.timeBetweenPipes, () => {
+            let middle = Math.random() * 6 + 2;
+            let gap = 4;
+            this.addPipes(middle, gap, this.pipeSpawnX + birdX)
+          })
+
+        },
+        addPipes(middle, gap, x){
+          let pipe = Object.create(prefabs.find(p => p.name == "pipe"))
+          pipe.startX = x;
+          pipe.startY = 10;
+          pipe.startRX = this.pipeRadius;
+          pipe.startRY = 10 - middle - gap / 2;
+          getGameObjects().push(pipe)
+
+          pipe = Object.create(prefabs.find(p => p.name == "pipe"))
+          pipe.startX = x;
+          pipe.startY = 0;
+          pipe.startRX = this.pipeRadius;
+          pipe.startRY = middle - gap / 2;
+          getGameObjects().push(pipe)
+
+        }
+      }
+    ]
+
     let scenes = [
       {
         firstUpdate(c, o) {
@@ -30,73 +175,61 @@
           o.zoom(10).lookAt(0, 5);
 
           //Set variables we will use in this scene
-          this.state = "playing" //State of the game. Other states include "dying"
-          this.deathTimeout = 0 // How long since we changed the state to "dying"
-          this.maxDeathTimeout = 1 //How long you are "dying" before restarting
-          this.v = 0; //Velocity (in y) of the character
-          this.y = 5; // The y location of the center of the bird
-          this.x = 0; // The x location of the centere of the bird
-          this.r = .25; // Radius of the bird
-          // this.timer = 0;
-          this.pipes = []
-          this.timeBetweenPipes = 3;
-          this.lastPipeTime = this.timeBetweenPipes;
-          this.pipeSpawnX = 5
-          this.pipeOpening = 4
-          this.pipeRadius = .5
-          this.inCollision = false;
-          this.speed = 1
-          this.previousPipes = 0 //How many pipes have we removed
+          this.gameObjects = []
+          
+          
+          
+
+          //Create the main controller
+          let mcpPrefab = prefabs.find(p => p.name == "mcp")
+          let mcp = Object.create(mcpPrefab);
+          this.gameObjects.push(mcp);
         },
         customUpdate(c, o) {
-          if (this.state != "playing") {
-            this.deathTimeout = inc(this.deathTimeout, o.secondsBetweenFrames, this.maxDeathTimeout, 
-            () => o.changeScene(0),
-            ()=>{
-              let percent = Math.min(1, 2*this.deathTimeout/(1*this.maxDeathTimeout))
-              o.zoom(interp(percent, 10, 1))
-              .lookAt(this.x, interp(percent, 5, this.y))
-            })
-            return
-          }
+          let bird = this.gameObjects.find(go => go.started && go.name == "bird")
+          let mcp = this.gameObjects.find(go => go.started && go.name == "mcp")
+
+          // if (mcp.state && mcp.state != "playing") {
+          //   this.deathTimeout = inc(this.deathTimeout, o.secondsBetweenFrames, this.maxDeathTimeout,
+          //     () => o.changeScene(0),
+          //     () => {
+          //       let percent = Math.min(1, 2 * this.deathTimeout / (1 * this.maxDeathTimeout))
+          //       o.zoom(interp(percent, 10, 1))
+          //         .lookAt(bird.x, interp(percent, 5, bird.y))
+          //     })
+          //   return
+          // }
           //Implied else state == "playing"
-          this.v -= 9.8 * o.time; // Apply the downwad force of gravity
-          i.down(" ", () => this.v = 5)
-          this.y += this.v * o.time;
-          this.x += o.time * this.speed;
-          o.lookAt(this.x, 5);
+          // this.v -= 9.8 * o.time; // Apply the downwad force of gravity
+          // i.down(" ", () => this.v = 5)
+          // this.y += this.v * o.time;
+          // this.x += o.time * this.speed;
+          // o.lookAt(this.x, 5);
 
-          if (this.y - this.r <= 0 || this.y + this.r >= 10) {
-            //You hit the ground or the top
-            this.state = "dying"
-            this.inCollision = true;
-          }
+          // if (this.y - this.r <= 0 || this.y + this.r >= 10) {
+          //   //You hit the ground or the top
+          //   this.state = "dying"
+          //   this.inCollision = true;
+          // }
 
-          this.lastPipeTime = inc(this.lastPipeTime, o.secondsBetweenFrames, this.timeBetweenPipes, () => {
-            let middle = Math.random() * 6 + 2;
-            let gap = 4;
-            this.addPipes(middle, gap, this.pipeSpawnX + this.x)
-          })
-
+          
           //Now check for collisions
           this.inCollision = false
-          for (const pipe of this.pipes) {
-            if (collisionRectRect(this.x, this.y, this.r, this.r, pipe.x, pipe.y, pipe.rx, pipe.ry)) {
-              this.inCollision = true
-              this.state = "dying"
+          for (const pipe of this.gameObjects.filter(go => go.name == "pipe" && go.started)) {
+            if (collisionRectRect(bird.x, bird.y, bird.r, bird.r, pipe.x, pipe.y, pipe.rx, pipe.ry)) {
+              mcp.inCollision = true
+              mcp.state = "dying"
             }
           }
 
           //Remove pipes that are behind you
-          this.pipes = this.pipes.filter(i => i.x > this.x - 20)
+          //this.pipes = this.pipes.filter(i => i.x > this.x - 20)
         },
         addPipes(middle, gap, x) {
-          this.pipes.push({ x, y: 10, rx: this.pipeRadius, ry: 10 - middle - gap / 2, })
-          this.pipes.push({ x, y: 0, rx: this.pipeRadius, ry: middle - gap / 2, })
+          
         },
         customDraw(c, o) {
-          this.pipes.forEach(pipe => $$.fi("green").fillRectCentered(pipe.x, pipe.y, pipe.rx, pipe.ry))
-          $$.fi(this.state == "playing" ? "blue" : "red").fillRectCentered(this.x, this.y, this.r, this.r)
+          // $$.fi(this.state == "playing" ? "blue" : "red").fillRectCentered(this.x, this.y, this.r, this.r)
         }
       }
     ]
